@@ -13,7 +13,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,5 +25,20 @@ class RequestContextTest {
     @SneakyThrows
     @Test
     @DisplayName("Handle a Socket within RequestContext")
-    void testSocketHandler(){}
+    void testSocketHandler(){
+        String request = "POST /messages HTTP/1.1\n" +
+                "HOST: localhost\n" +
+                "Content-Type: text/plain; charset=UTF-8\n" +
+                "\n" +
+                "Hallo Welt";
+
+        when(socketMock.getInputStream()).thenReturn(new ByteArrayInputStream(request.getBytes()));
+        when(socketMock.getOutputStream()).thenReturn(new ByteArrayOutputStream(64));
+
+        // act
+        new RequestContext(socketMock);
+
+        // assert
+        //verify(socketMock).getInputStream();
+    }
 }
