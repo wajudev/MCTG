@@ -1,15 +1,15 @@
 package com.example.mctg.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.example.mctg.user.User;
 
-public class DatabaseService implements DatabaseServiceInterface {
+import java.sql.*;
+
+public class DatabaseService {
     private static DatabaseService instance;
 
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/monstercardgame";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
+    private static final String USER = "waju";
+    private static final String PASSWORD = "";
 
     private DatabaseService() {
     }
@@ -21,13 +21,15 @@ public class DatabaseService implements DatabaseServiceInterface {
         return DatabaseService.instance;
     }
 
-    @Override
     public Connection getConnection() {
        try {
-           return DriverManager.getConnection(DB_URL, USER, PASSWORD);
+           Connection connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+           connection.setAutoCommit(false);
+           return connection;
        } catch (SQLException e){
-           e.printStackTrace();
+           System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+           System.exit(0);
+           return null;
        }
-       return null;
     }
 }

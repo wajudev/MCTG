@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserService implements UserServiceInterface {
+public class UserService {
     private static UserService instance;
 
     private UserService(){
@@ -20,69 +20,136 @@ public class UserService implements UserServiceInterface {
         return UserService.instance;
     }
 
-    @Override
-    public UserInterface addUser(UserInterface user) {
-        try {
-            Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, status, password, token, coins, elo) VALUES (?,?,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getStatus());
-            preparedStatement.setString(3, user.getPassword());
-            preparedStatement.setString(4, user.getToken());
-            preparedStatement.setInt(5, user.getCoins());
-            preparedStatement.setInt(6, user.getElo());
+    public boolean addUser(User user) throws SQLException {
+        Connection connection = DatabaseService.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, status, password, token, coins, elo, admin, total_battles, won_battles,lost_battles) VALUES (?,?,?,?,?,?,?,?,?,?);");
+        preparedStatement.setString(1, user.getUsername());
+        preparedStatement.setString(2, user.getStatus());
+        preparedStatement.setString(3, user.getPassword());
+        preparedStatement.setString(4, user.getToken());
+        preparedStatement.setInt(5, user.getCoins());
+        preparedStatement.setInt(6, user.getElo());
+        preparedStatement.setBoolean(7, user.isAdmin());
+        preparedStatement.setInt(8, 0);
+        preparedStatement.setInt(9, 0);
+        preparedStatement.setInt(10, 0);
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows == 0){
-                return null;
-            }
-            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                if (generatedKeys.next()){
-                    return this.getUser(generatedKeys.getInt(1));
-                }
-            }
-            preparedStatement.close();
-            connection.close();
-        } catch (SQLException ignored){
-
+        int affectedRows = preparedStatement.executeUpdate();
+        if (affectedRows > 0){
+            connection.commit();
         }
-        return null;
+        preparedStatement.close();
+        connection.close();
+
+        return affectedRows > 0;
     }
 
-    @Override
-    public UserInterface getUser(int id) {
+
+    public User getUser(String username) {
+        User user = null;
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, username, status, password, token, coins, elo FROM users WHERE id=?;");
-            preparedStatement.setInt(id, 1);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username=?;");
+            preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()){
-                UserInterface user = User.builder()
-                        .id(resultSet.getInt(1))
-                        .username(resultSet.getString(2))
-                        .status(resultSet.getString(3))
-                        .password(resultSet.getString(4))
-                        .token(resultSet.getString(5))
-                        .coins(resultSet.getInt(6))
-                        .elo(resultSet.getInt(7))
-                        .build();
-                resultSet.close();
-                preparedStatement.close();
-                connection.close();
-
-                return user;
+            try {
+                if (resultSet.next()) {
+                    user =buildUser(resultSet, false);
+                }
+            } catch (Exception e){
+                e.printStackTrace();
             }
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
         } catch (SQLException e){
             e.printStackTrace();
         }
 
-        return null;
+        return user;
     }
 
-    @Override
-    public UserInterface updateUser(int id, UserInterface user) {
-        User toBeUpdatedUser = (User) this.getUser(id);
+    public User getUser(int id) {
+        User user = null;
+        try {
+            Connection connection = DatabaseService.getInstance().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE id=?;");
+            preparedStatement.setInt(id, 1);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            try {
+                if (resultSet.next()) {
+                    user =buildUser(resultSet, false);
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
+    public User buildUser(ResultSet resultSet, boolean withPassword) throws SQLException {
+        String password;
+        if (withPassword) {
+            password = resultSet.getString("password");
+        } else {
+            password = "";
+        }
+        User user = User.builder()
+                .id(resultSet.getInt("id"))
+                .username(resultSet.getString("username"))
+                .status(resultSet.getString("status"))
+                .token(resultSet.getString("token"))
+                .coins(resultSet.getInt("coins"))
+                .elo(resultSet.getInt("elo"))
+                .isAdmin( resultSet.getBoolean("admin") )
+                .build();
+                //.stack(new CardStack())
+                //.deck(new CardDeck())
+                //.gamesPlayed( rs.getInt("games") )
+       /* List<Card> list = getCardListByOwner(user.getUsername());
+        if(!list.isEmpty()) {
+            user.getStack().addListToStack(list);
+        }*/
+        return user;
+    }
+
+    public User getUserByUsername(String username, String password){
+        User user = null;
+        try {
+            Connection connection = DatabaseService.getInstance().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username=? AND password=?;");
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            try {
+                if (resultSet.next()) {
+                    user =buildUser(resultSet, true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+                resultSet.close();
+                preparedStatement.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return user;
+
+    }
+
+
+
+    public boolean updateUser(int id, User user) {
+        int affectedRows = 0;
+        User toBeUpdatedUser = this.getUser(id);
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET username = ?, password = ?, token = ?, status = ?, coins = ?, elo = ? WHERE id = ?;");
@@ -95,102 +162,116 @@ public class UserService implements UserServiceInterface {
             preparedStatement.setInt(6, user.getCoins());
             preparedStatement.setInt(5, id);
 
-            int affectedRows = preparedStatement.executeUpdate();
-
+            affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows > 0){
+                connection.commit();
+            }
             preparedStatement.close();
             connection.close();
 
-            if (affectedRows == 0){
-                return null;
-            }
-
-            return this.getUser(id);
         } catch (SQLException e){
             e.printStackTrace();
         }
-        return null;
+        return affectedRows > 0;
     }
 
-    @Override
-    public UserInterface getUserWithoutSensibleData(int id) {
-        if (id == 0) {
-            return null;
-        }
-        return ((User) this.getUser(id)).toBuilder().password(null).token(null).build();
-    }
-
-    @Override
-    public UserInterface getUserByUsername(String username){
-        try {
-            Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, username, status, password, token, coins, elo FROM users WHERE id=?;");
-            preparedStatement.setString(1, username);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()){
-                UserInterface user = User.builder()
-                        .id(resultSet.getInt(1))
-                        .username(resultSet.getString(2))
-                        .status(resultSet.getString(3))
-                        .password(resultSet.getString(4))
-                        .token(resultSet.getString(5))
-                        .coins(resultSet.getInt(6))
-                        .elo(resultSet.getInt(7))
-                        .build();
+    public List<User> getUsers() {
+            List<User> users = new ArrayList<>();
+            try {
+                Connection connection = DatabaseService.getInstance().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users");
+                ResultSet resultSet = preparedStatement.executeQuery();
+                try {
+                    if (resultSet.next()) {
+                        do {
+                            users.add(buildUser(resultSet, false));
+                        } while (resultSet.next());
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
                 resultSet.close();
                 preparedStatement.close();
                 connection.close();
-
-                return user;
+            } catch (SQLException e){
+                e.printStackTrace();
             }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
 
-        return null;
-
+            return users;
     }
 
-    @Override
-    public UserInterface getUserByUsernameWithoutSensibleData(String username) {
-        if (username == null) {
-            return null;
-        }
-        return ((User) this.getUserByUsername(username)).toBuilder().password(null).token(null).build();
-    }
-
-    @Override
-    public List<UserInterface> getUsers() {
+    public User getLoggedUser(String token) {
+        User user = null;
         try {
-            Connection connection = DatabaseService.getInstance().getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT id, username, status, password, token, coins, elo FROM users");
-
-            List<UserInterface> users = new ArrayList<>();
-            while (resultSet.next()){
-                users.add(User.builder()
-                        .id(resultSet.getInt(1))
-                        .username(resultSet.getString(2))
-                        .status(resultSet.getString(3))
-                        .password(resultSet.getString(4))
-                        .token(resultSet.getString(5))
-                        .coins(resultSet.getInt(6))
-                        .elo(resultSet.getInt(7))
-                        .build());
-                resultSet.close();
-                statement.close();
-                connection.close();
-
-                return users;
+            if(isLoggedIn(token)) {
+                String[] strs = token.split("-");
+                user = getUser(Integer.parseInt(strs[0]));
             }
-        } catch (SQLException e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return null;
+        return user;
     }
 
-    @Override
+    public boolean isLoggedIn(String token) throws SQLException {
+        Connection connection = DatabaseService.getInstance().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM sessions WHERE token=?;");
+        preparedStatement.setString(1, token);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public boolean addSession(String token){
+        try {
+            if(!isLoggedIn(token)) {
+                Connection connection = DatabaseService.getInstance().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO sessions (token, \"last_loggedin\") VALUES (?, current_timestamp);");
+                preparedStatement.setString(1, token);
+                int affectedRows = preparedStatement.executeUpdate();
+                if (affectedRows > 0) {
+                    connection.commit();
+                }
+                preparedStatement.close();
+                return true;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteSession(String token) {
+        int affectedRows = 0;
+        try {
+            if(isLoggedIn(token)) {
+                Connection connection = DatabaseService.getInstance().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM sessions WHERE token LIKE ?;");
+                preparedStatement.setString(1, token);
+                affectedRows = preparedStatement.executeUpdate();
+                if (affectedRows > 0) {
+                    connection.commit();
+                }
+                preparedStatement.close();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return affectedRows > 0;
+    }
+
+
+
+   
     public boolean deleteUser(int id) {
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
