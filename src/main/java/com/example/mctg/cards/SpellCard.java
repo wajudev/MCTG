@@ -4,12 +4,12 @@ import lombok.*;
 
 @NoArgsConstructor
 public class SpellCard extends Card{
-    @Getter
-    CardType cardType = CardType.SPELL;
+
+    CardType cardType;
 
     @Builder
-    public SpellCard(int id, String name, ElementType elementType, float damage, boolean inDeck, int owner){
-        super(id, name, null, elementType, damage, inDeck, owner);
+    public SpellCard(int id, String name, CardType cardType, ElementType elementType, float damage, boolean inDeck, int owner){
+        super(id, name, cardType, null, elementType, damage, inDeck, owner);
         this.cardType = CardType.SPELL;
     }
 }
