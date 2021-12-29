@@ -1,17 +1,13 @@
 package com.example.mctg.user;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.hash.Hashing;
+
+import com.example.mctg.cards.Deck;
+import com.example.mctg.cards.Stack;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
 
 @Getter
 @Setter
@@ -22,27 +18,17 @@ public class User {
     private String username;
     private String password;
     private String token;
-    private int elo = 100;
-    private int coins = 20;
+    private int coins;
+    private int battlesFought;
+    private int battlesWon;
+    private int battlesLost;
+    private int elo;
     private boolean isAdmin;
 
+    private Stack stack;
+    private Deck deck;
 
-    @JsonIgnore
-    public boolean auth(String password) {
-        String passwordHash = Hashing.sha256()
-                .hashString(password, StandardCharsets.UTF_8)
-                .toString();
 
-        return passwordHash.equals(getPassword());
-    }
-
-    @JsonIgnore
-    public boolean isLoggedIn(){
-        if (this.token == null){
-            return false;
-        }
-        return !(token.isEmpty());
-    }
 
     public String printUserDetails() {
         return  "-- User Account Summary -- \n" +
