@@ -2,21 +2,21 @@ package com.example.mctg.cards;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public abstract class Card {
+@Getter
+public abstract class Card implements ICard {
     private int id;
     private String name;
-    private CardType cardType;
     private MonsterType monsterType;
     private ElementType elementType;
     private float damage;
     private boolean locked;
     private int owner;
+
 
 
     public boolean defeats(Card card){
