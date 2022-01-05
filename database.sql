@@ -15,3 +15,5 @@ CREATE TABLE users
     elo           INT                   DEFAULT 100,
     UNIQUE (username)
 );
+
+INSERT INTO cards ( name, card_type, monster_type, element_type, damage) VALUES ('Elixiro', 'SPELL', null, 'WATER', 30.56);

@@ -9,16 +9,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public abstract class Card implements ICard {
-    private int id;
-    private String name;
-    private MonsterType monsterType;
-    private ElementType elementType;
-    private float damage;
-    private boolean locked;
-    private int owner;
+   private int id;
+   private String name;
+   private MonsterType monsterType;
+   private ElementType elementType;
+   private float damage;
+   private boolean locked;
 
 
-
+    @Override
     public boolean defeats(Card card){
         // Monster card vs Monster card
         if (CardType.MONSTER.equals(this.getCardType()) && CardType.MONSTER.equals(card.getCardType())){
@@ -59,7 +58,9 @@ public abstract class Card implements ICard {
         return false;
     }
 
+
     // Effectiveness for Spell Cards
+    @Override
     public float calculateEffectiveness(Card card){
         if (CardType.SPELL.equals(this.getCardType())){
             // Double Damage Effective
@@ -83,5 +84,52 @@ public abstract class Card implements ICard {
         System.out.println(this.getDamage());
         return this.getDamage();
 
+    }
+
+    public static Card buildCard(int id, String name, String cardTypeString, String monsterTypeString, String elementTypeString, float damage, boolean locked){
+        CardType cardType;
+        MonsterType monsterType;
+        ElementType elementType;
+        Card card;
+
+        try {
+            cardType = CardType.valueOf(cardTypeString);
+        } catch (IllegalArgumentException e){
+            cardType = CardType.MONSTER;
+        }
+
+        try {
+            elementType = ElementType.valueOf(elementTypeString);
+        } catch (IllegalArgumentException e) {
+            elementType = ElementType.randomElement();
+        }
+
+        if (CardType.MONSTER.equals(cardType)){
+            try {
+                monsterType = MonsterType.valueOf(monsterTypeString);
+            } catch (IllegalArgumentException e) {
+                monsterType = MonsterType.randomMonsterType();
+            }
+
+            // Create Monster Card
+            card = MonsterCard.builder()
+                    .id(id)
+                    .name(name)
+                    .monsterType(monsterType)
+                    .elementType(elementType)
+                    .damage(damage)
+                    .build();
+
+        } else {
+            // Otherwise create Spell Card
+            card = SpellCard.builder()
+                    .id(id)
+                    .name(name)
+                    .elementType(elementType)
+                    .damage(damage)
+                    .build();
+        }
+
+        return card;
     }
 }

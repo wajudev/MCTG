@@ -8,8 +8,8 @@ public class SpellCard extends Card{
     CardType cardType = CardType.SPELL;
 
     @Builder
-    public SpellCard(int id, String name, ElementType elementType, float damage, boolean inDeck, int owner){
-        super(id, name, null, elementType, damage, inDeck, owner);
+    public SpellCard(int id, String name, ElementType elementType, float damage, boolean inDeck){
+        super(id, name, null, elementType, damage, inDeck);
         this.cardType = CardType.SPELL;
     }
 }

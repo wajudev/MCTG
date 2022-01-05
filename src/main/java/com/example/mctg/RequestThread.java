@@ -32,7 +32,7 @@ public class RequestThread implements Runnable {
         readHeader(header, reader);
 
         try {
-            if(header.size() < 2) return; //postman solution - empty request
+            if(header.size() < 2) return; // postman solution - empty request
             HttpRequest requestContext = new HttpRequest(header);
             OutputStream outputStream = socket.getOutputStream();
             readBody(requestContext, reader);
