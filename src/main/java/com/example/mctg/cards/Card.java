@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public abstract class Card implements ICard {
-   private int id;
+   private String id;
    private String name;
    private MonsterType monsterType;
    private ElementType elementType;
    private float damage;
    private boolean locked;
+   private int userId;
+
 
 
     @Override
@@ -86,7 +88,16 @@ public abstract class Card implements ICard {
 
     }
 
-    public static Card buildCard(int id, String name, String cardTypeString, String monsterTypeString, String elementTypeString, float damage, boolean locked){
+    @Override
+    public String getCardStats() {
+        return "\tid: " + this.id +
+                " - Name: " + this.name +
+                " - Monster Type: " + this.monsterType.getName() +
+                " - Element: " + this.elementType.getElementName() +
+                " - Damage: " + this.damage + "\n";
+    }
+
+    public static Card buildCard(String id, String name, String cardTypeString, String monsterTypeString, String elementTypeString, float damage, boolean locked){
         CardType cardType;
         MonsterType monsterType;
         ElementType elementType;

@@ -1,12 +1,12 @@
 package com.example.mctg.user;
 
 
-import com.example.mctg.cards.Deck;
-import com.example.mctg.cards.Stack;
+import com.example.mctg.cards.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 
 
 @Getter
@@ -29,6 +29,35 @@ public class User {
     private Deck deck;
 
 
+    public boolean buyPackage(List<Card> list){ // ! DB cards
+       Packages pack = new Packages(list);
+        if(this.coins >= pack.getPrice()) {
+            this.coins = this.coins - pack.getPrice();
+            this.stack.addListToStack(pack.getCards());
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public String userStats(String rank) {
+        if(!this.isAdmin) {
+            if(rank.isEmpty()) {
+                return  rank +
+                        " User: " + this.username +
+                        " - Coins: " + this.coins +
+                        " - Games Played: " + this.battlesFought +
+                        " - ELO: " + this.elo + "\n";
+            }
+            return  rank +
+                    " User: " + this.username +
+                    " - Games Played: " + this.battlesFought +
+                    " - ELO: " + this.elo + "\n";
+        } else {
+            return "";
+        }
+    }
 
     public String printUserDetails() {
         return  "-- User Account Summary -- \n" +

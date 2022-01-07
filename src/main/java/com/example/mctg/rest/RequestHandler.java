@@ -1,5 +1,7 @@
 package com.example.mctg.rest;
 
+import com.example.mctg.cards.Card;
+import com.example.mctg.controller.CardController;
 import com.example.mctg.controller.UserController;
 import com.example.mctg.database.DatabaseService;
 import com.example.mctg.rest.enums.HttpMethod;
@@ -18,6 +20,7 @@ import lombok.Data;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Builder
@@ -31,6 +34,7 @@ public class RequestHandler implements IRequestHandler {
 
     private UserController userController;
     private DatabaseService databaseService;
+    private CardController cardController;
 
     public HttpResponse handleRequest() throws JsonProcessingException, SQLException {
         if (!HttpMethod.methodList.contains(requestContext.getMethod())){
@@ -142,11 +146,11 @@ public class RequestHandler implements IRequestHandler {
 
         switch (first) {
             //case "score"    -> getScoreBoard();
-            //case "stats"    -> this.responseBody = this.userController.getUser().userStats("");
+            case "stats"    -> this.responseBody = this.userController.getUser().userStats("");
             //case "battles"  -> startBattle(getClientToken());
-            //case "packages" -> insertNewPackage();
-            //case "cards"    -> showUserCards(getClientToken());
-            //case "deck"     -> manipulateDeck(getClientToken(), requestContext.getBody());
+            case "packages" -> insertNewPackage();
+            case "cards"    -> showUserCards(getClientToken());
+            case "deck"     -> manipulateDeck(getClientToken(), requestContext.getBody());
             //case "tradings" -> handleTradings(getClientToken());
             default         -> setResponseStatus("Wrong URL", StatusCode.BADREQUEST);
         }
@@ -188,6 +192,79 @@ public class RequestHandler implements IRequestHandler {
         }
     }
 
+    public void showUserCards(String token) throws JsonProcessingException { // ! none-admin users
+        if(this.userController.setUser(token) && !this.userController.getUser().isAdmin()) {
+            if(this.userController.initializeStack()) {
+                this.responseBody = String.valueOf(cardController
+                        .getCardsListJson(this.userController.getUser().getStack().getStackList()));
+            } else {
+                setResponseStatus("Stack is empty", StatusCode.NOCONTENT);
+            }
+        } else {
+            setResponseStatus("Only players own cards (not admins)", StatusCode.BADREQUEST);
+        }
+    }
+
+    public void manipulateDeck(String token, String requestBody) throws JsonProcessingException {
+
+        if(this.userController.setUser(token) && !this.userController.getUser().isAdmin()) {
+            if(this.userController.initializeStack()) {
+                switch (this.requestContext.getMethod()) {
+                    case PUT -> initializeDeck(requestBody);
+                    case GET -> showDeckCards(this.formatJson);
+                    default  -> setResponseStatus("Deck - This method is not allowed", StatusCode.BADREQUEST);
+                }
+            } else {
+                setResponseStatus("Stack is empty", StatusCode.NOCONTENT);
+            }
+        } else {
+            setResponseStatus("Only players own cards (not admins)", StatusCode.BADREQUEST);
+        }
+    }
+
+    public void showDeckCards(boolean formatJson) throws JsonProcessingException {
+        if(!this.userController.getUser().isAdmin()) {
+            if(this.userController.getUser().getDeck().getDeckList() != null) {
+                List<Card> deck = this.userController.getUser().getDeck().getDeckList();
+                if(!deck.isEmpty()) {
+                    if(!formatJson) {
+                        this.responseBody = String.valueOf(cardController
+                                .getCardListStats(deck, "Deck"));
+                    } else {
+                        this.responseBody = String.valueOf(cardController
+                                .getCardsListJson(deck));
+                    }
+                } else {
+                    setResponseStatus("Deck is empty", StatusCode.NOCONTENT);
+                }
+            }
+        } else {
+            setResponseStatus("Only players own cards (not admins)", StatusCode.BADREQUEST);
+        }
+    }
+
+    public void initializeDeck(String requestBody) {
+        List<String> ids = parseJsonArray(requestBody);
+        String errorMsg = this.userController.addCardsToDeck(ids);
+        if(errorMsg == null && ids.size() == 4) {
+            this.responseBody = "New deck prepared";
+        } else {
+            setResponseStatus(  errorMsg, StatusCode.BADREQUEST);
+        }
+    }
+
+    public void insertNewPackage() throws JsonProcessingException {
+        if(this.userController.getUser().isAdmin()) {
+            if( ! this.cardController.insertJSONCards( this.requestContext.getBody(), this.userController.getUser() ) ) {
+                setResponseStatus( "This card already exists in DB", StatusCode.BADREQUEST);
+            } else {
+                this.responseBody = "Cards added to DB";
+            }
+        } else {
+            setResponseStatus("Only admin can add new packages", StatusCode.UNAUTHORIZED);
+        }
+    }
+
     public void splitURL(String fullPath) {
         this.path = new String[3];
         String[] temp = fullPath.split("/");
@@ -214,7 +291,6 @@ public class RequestHandler implements IRequestHandler {
         Map<String, String> map = getQueryMap(parameters);
     }
 
-
     public void validateURLActions(String first) {
         String[] allowedTables = {"users", "sessions", "score", "stats", "tradings", "transactions", "battles", "deck", "cards", "", "packages", null};
         if( !Arrays.asList( allowedTables ).contains( first ) ) {
@@ -239,6 +315,11 @@ public class RequestHandler implements IRequestHandler {
     private void setResponseStatus(String responseMessage, StatusCode code) {
         this.responseBody = responseMessage;
         this.responseStatus = code;
+    }
+
+    public List<String> parseJsonArray(String json) {
+        String replaceStr = json.replaceAll("[\\[\\] \\n\\r\"]", "");
+        return Arrays.asList(replaceStr.split(","));
     }
 
 }

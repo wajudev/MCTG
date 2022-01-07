@@ -1,5 +1,6 @@
 package com.example.mctg;
 
+import com.example.mctg.controller.CardController;
 import com.example.mctg.controller.UserController;
 import com.example.mctg.database.DatabaseService;
 import com.example.mctg.rest.HttpRequest;
@@ -43,7 +44,7 @@ public class RequestThread implements Runnable {
                         .responseStatus(StatusCode.OK)
                         .databaseService(DatabaseService.getInstance())
                         .userController(new UserController(DatabaseService.getInstance(), null))
-                        //.cardController( new CardController( new DbConnection() ) )
+                        .cardController( new CardController(DatabaseService.getInstance()))
                         //.tradeController( new TradeController( new DbConnection() ) )
                         .formatJson(true)
                         //.startBattle(false)

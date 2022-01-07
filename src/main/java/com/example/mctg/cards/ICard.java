@@ -3,7 +3,7 @@ package com.example.mctg.cards;
 public interface ICard {
     CardType getCardType();
 
-    int getId();
+    String getId();
 
     String getName();
 
@@ -18,4 +18,6 @@ public interface ICard {
     boolean defeats(Card card);
 
     float calculateEffectiveness(Card card);
+
+    String getCardStats();
 }

@@ -1,5 +1,9 @@
 package com.example.mctg.user;
 
+import com.example.mctg.cards.Card;
+import com.example.mctg.cards.CardService;
+import com.example.mctg.cards.Deck;
+import com.example.mctg.cards.Stack;
 import com.example.mctg.database.DatabaseService;
 
 import java.sql.*;
@@ -103,19 +107,22 @@ public class UserService {
         User user = User.builder()
                 .id(resultSet.getInt("id"))
                 .username(resultSet.getString("username"))
+                .password(password)
                 .status(resultSet.getString("status"))
                 .token(resultSet.getString("token"))
                 .coins(resultSet.getInt("coins"))
                 .elo(resultSet.getInt("elo"))
                 .isAdmin( resultSet.getBoolean("admin") )
+                .stack(new Stack())
+                .deck(new Deck())
+                .battlesFought( resultSet.getInt("total_battles"))
                 .build();
-                //.stack(new CardStack())
-                //.deck(new CardDeck())
-                //.gamesPlayed( rs.getInt("games") )
-       /* List<Card> list = getCardListByOwner(user.getUsername());
+
+
+        List<Card> list = CardService.getInstance().getCardsByUser(user);
         if(!list.isEmpty()) {
             user.getStack().addListToStack(list);
-        }*/
+        }
         return user;
     }
 
@@ -152,15 +159,13 @@ public class UserService {
         User toBeUpdatedUser = this.getUser(id);
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET username = ?, password = ?, token = ?, status = ?, coins = ?, elo = ? WHERE id = ?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET username = ?, password = ?, token = ?, status = ? WHERE id = ?;");
 
             preparedStatement.setString(1, user.getUsername() != null ? user.getUsername() : toBeUpdatedUser.getUsername());
             preparedStatement.setString(2, user.getPassword() != null ? user.getPassword() : toBeUpdatedUser.getPassword());
             preparedStatement.setString(3, user.getToken() != null ? user.getToken() : toBeUpdatedUser.getToken());
             preparedStatement.setString(4, user.getStatus() != null ? user.getStatus() : toBeUpdatedUser.getStatus());
-            preparedStatement.setInt(5, user.getCoins());
-            preparedStatement.setInt(6, user.getCoins());
-            preparedStatement.setInt(5, id);
+
 
             affectedRows = preparedStatement.executeUpdate();
             if (affectedRows > 0){
@@ -171,6 +176,28 @@ public class UserService {
 
         } catch (SQLException e){
             e.printStackTrace();
+        }
+        return affectedRows > 0;
+    }
+
+    public boolean updateUserStats(User user){
+        int affectedRows = 0;
+        try {
+            Connection connection = DatabaseService.getInstance().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET coins = ?, elo = ?, total_battles = ? WHERE username LIKE ?;");
+            preparedStatement.setInt(1, user.getCoins() );
+            preparedStatement.setInt(2, user.getElo() );
+            preparedStatement.setInt(3, user.getBattlesFought());
+            preparedStatement.setString(4, user.getUsername());
+
+            affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows > 0) {
+                connection.commit();
+            }
+            preparedStatement.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return affectedRows > 0;
     }
