@@ -12,8 +12,7 @@ public enum HttpMethod {
     POST,
     PUT,
     DELETE,
-    NOTSUPPORTED
-    ;
+    NOTSUPPORTED;
 
-    public static List<HttpMethod> methodList = new ArrayList<>(Arrays.asList(HttpMethod.values()));
+    public static final List<HttpMethod> methodList = new ArrayList<>(Arrays.asList(HttpMethod.values()));
 }

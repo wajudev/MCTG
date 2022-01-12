@@ -11,8 +11,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder(toBuilder = true)
-public class User {
+@Builder
+public class User  {
     private int id;
     private String status;
     private String username;

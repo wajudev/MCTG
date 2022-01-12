@@ -12,7 +12,7 @@ public class Main implements Runnable{
         System.out.println("start server");
 
         try {
-            listener = new ServerSocket(10001, 5); //8080
+            listener = new ServerSocket(10001, 5);
         } catch (IOException e) {
             e.printStackTrace();
             return;

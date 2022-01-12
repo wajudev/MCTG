@@ -112,7 +112,7 @@ public class UserService {
                 .token(resultSet.getString("token"))
                 .coins(resultSet.getInt("coins"))
                 .elo(resultSet.getInt("elo"))
-                .isAdmin( resultSet.getBoolean("admin") )
+                .isAdmin(resultSet.getBoolean("admin"))
                 .stack(new Stack())
                 .deck(new Deck())
                 .battlesFought( resultSet.getInt("total_battles"))
@@ -151,8 +151,6 @@ public class UserService {
         return user;
 
     }
-
-
 
     public boolean updateUser(int id, User user) {
         int affectedRows = 0;
@@ -232,7 +230,7 @@ public class UserService {
         try {
             if(isLoggedIn(token)) {
                 String[] strs = token.split("-");
-                user = getUser(Integer.parseInt(strs[0]));
+                user = getUser(strs[0]);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -249,8 +247,6 @@ public class UserService {
         if (resultSet.next()) {
             resultSet.close();
             preparedStatement.close();
-            connection.close();
-
             return true;
         } else {
             return false;
@@ -296,9 +292,6 @@ public class UserService {
         return affectedRows > 0;
     }
 
-
-
-   
     public boolean deleteUser(int id) {
         try {
             Connection connection = DatabaseService.getInstance().getConnection();

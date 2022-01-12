@@ -31,10 +31,10 @@ public class CardController {
 
     public boolean insertJSONCards(String cardsArray, User user) throws JsonProcessingException {
         CardData[] listCustomCard = deserializer(cardsArray);
-
+        int packageID = CardService.getInstance().getMaxPackageId() + 1;
         for(CardData temp: listCustomCard) {
             Card card = buildCard(temp, user.getId(), false);
-            if (CardService.getInstance().insertCard(card)) {
+            if (!CardService.getInstance().insertCardForPackages(card, packageID)) {
                 return false;
             }
         }

@@ -51,6 +51,7 @@ public class RequestHandler implements IRequestHandler {
                 .reasonPhrase(this.responseBody)
                 .status(this.responseStatus)
                 .requestHeaders(this.requestContext.getHeaders())
+                .user(this.userController.getUser())
                 .build();
     }
 
@@ -61,7 +62,6 @@ public class RequestHandler implements IRequestHandler {
         if (this.responseStatus != StatusCode.BADREQUEST
                 && this.requestContext.getPath().matches("(/" + this.path[1] + "/)("+ this.path[2] +")(/?)" )) {
             selectAction(this.path[1],this.path[2], getClientToken());
-
         } else if (this.responseStatus != StatusCode.BADREQUEST
                 && ( this.requestContext.getPath().matches("(/" + this.path[1] + ")(/?)([?a-z=]*)")
                 || this.requestContext.getPath().matches("(/deck\\?format=plain)" ) )
@@ -103,20 +103,33 @@ public class RequestHandler implements IRequestHandler {
 
     public void selectAction(String first, String token) throws JsonProcessingException, SQLException {
 
-        if(!this.userController.setUser(token)) { // ! user is not logged in
-            anonymousUserAction(first);
-        } else {
+        if(this.userController.setUser(token)) { // ! user is not logged in
             loggedUserAction(first);
+        } else {
+            anonymousUserAction(first);
         }
     }
 
-    public void manipulateUserAccount(String token, String userNameURL) throws JsonProcessingException {
-        if( userNameURL.equals(token) ) { // * token = user
+    public void loggedUserAction(String first) throws JsonProcessingException, SQLException {
 
-            if( requestContext.getMethod() == HttpMethod.GET ) { // ! show user info
+        switch (first) {
+            //case "score"    -> getScoreBoard();
+            case "stats"    -> this.responseBody = this.userController.getUser().userStats("");
+            //case "battles"  -> startBattle(getClientToken());
+            case "packages" -> insertNewPackage();
+            case "cards"    -> showUserCards(getClientToken());
+            case "deck"     -> manipulateDeck(getClientToken(), requestContext.getBody());
+            //case "tradings" -> handleTradings(getClientToken());
+            default         -> setResponseStatus("Wrong URL", StatusCode.BADREQUEST);
+        }
+    }
+    public void manipulateUserAccount(String token, String userNameURL) throws JsonProcessingException {
+        if( userNameURL.equals(token) ) {
+
+            if( requestContext.getMethod() == HttpMethod.GET ) {
                 this.responseBody = this.userController.getUser().printUserDetails();
 
-            } else if ( requestContext.getMethod() == HttpMethod.PUT ) { // ! modify user info
+            } else if ( requestContext.getMethod() == HttpMethod.PUT ) {
                 this.responseBody = this.userController.editUserData(this.requestContext.getBody());
             } else {
                 setResponseStatus("Method not allowed", StatusCode.BADREQUEST);
@@ -142,19 +155,7 @@ public class RequestHandler implements IRequestHandler {
         }
     }
 
-    public void loggedUserAction(String first) throws JsonProcessingException, SQLException {
 
-        switch (first) {
-            //case "score"    -> getScoreBoard();
-            case "stats"    -> this.responseBody = this.userController.getUser().userStats("");
-            //case "battles"  -> startBattle(getClientToken());
-            case "packages" -> insertNewPackage();
-            case "cards"    -> showUserCards(getClientToken());
-            case "deck"     -> manipulateDeck(getClientToken(), requestContext.getBody());
-            //case "tradings" -> handleTradings(getClientToken());
-            default         -> setResponseStatus("Wrong URL", StatusCode.BADREQUEST);
-        }
-    }
 
     public void anonymousUserAction(String first) throws JsonProcessingException, SQLException {
 
@@ -165,7 +166,6 @@ public class RequestHandler implements IRequestHandler {
                     StatusCode.UNAUTHORIZED);
         }
     }
-
 
     public String getClientToken() {
         String tokenLine = requestContext.getHeaders().get("Authorization");

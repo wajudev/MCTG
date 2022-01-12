@@ -1,6 +1,7 @@
 package com.example.mctg.rest;
 
 import com.example.mctg.rest.enums.StatusCode;
+import com.example.mctg.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class HttpResponse {
     private final Map<String, String> requestHeaders;
     private Map<String, String> responseHeaders;
     private String body;
+    private User user;
 
     public String getResponse(){
         this.responseHeaders = new HashMap<>();

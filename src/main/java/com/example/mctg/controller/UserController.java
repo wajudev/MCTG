@@ -87,7 +87,7 @@ public class UserController {
         try{
             this.user = UserService.getInstance().getUserByUsername(credentials.getUsername(), credentials.getPassword());
             if (this.user != null){
-                if (UserService.getInstance().addSession(credentials.getUsername() + "mctg-token")){
+                if (UserService.getInstance().addSession(credentials.getUsername() + "-mtcgToken")){
                     System.out.println("Login was successful (UserController)");
                     return "Login was successful";
                 } else {

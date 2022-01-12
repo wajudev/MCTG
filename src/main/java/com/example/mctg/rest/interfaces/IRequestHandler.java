@@ -8,4 +8,7 @@ public interface IRequestHandler {
     void handlePath() throws JsonProcessingException, SQLException;
     void register(String requestBody, String token) throws JsonProcessingException, SQLException;
     void login(String requestBody) throws JsonProcessingException;
+
+    void showUserCards(String token) throws JsonProcessingException;
+    void showDeckCards(boolean formatJson) throws JsonProcessingException;
 }

@@ -54,20 +54,51 @@ public class CardService {
         return null;
     }
 
+    public boolean insertCardForPackages(Card card, int packageId){
+        int affectedRows = 0;
+        try {
+            Connection connection = DatabaseService.getInstance().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cards(id, name, card_type, monster_type, element_type, damage, user_id, package_id) VALUES (?,?,?,?,?,?,?,?);");
+            preparedStatement.setString(1, card.getId());
+            preparedStatement.setString(2, card.getName());
+            preparedStatement.setString(3, String.valueOf(card.getCardType()));
+            preparedStatement.setString(4, String.valueOf(card.getMonsterType()));
+            preparedStatement.setString(5, String.valueOf(card.getElementType()));
+            preparedStatement.setFloat(6, card.getDamage());
+            preparedStatement.setNull(7, Types.NULL);
+            preparedStatement.setInt(8, packageId);
+
+
+            affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows > 0){
+                connection.commit();
+            }
+
+            preparedStatement.close();
+            //connection.close();
+
+        } catch (SQLException exception){
+            exception.printStackTrace();
+        }
+        return affectedRows > 0;
+
+    }
+
 
     public boolean insertCard(Card card){
         int affectedRows = 0;
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cards(id, name, card_type, monster_type, element_type, damage, user_id, package_id) VALUES (?,?,?,?,?,?,?);");
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cards(id, name, card_type, monster_type, element_type, damage, user_id, package_id) VALUES (?,?,?,?,?,?,?,?);");
             preparedStatement.setString(1, card.getId());
-            preparedStatement.setString(1, card.getName());
-            preparedStatement.setString(2, String.valueOf(card.getCardType()));
-            preparedStatement.setString(3, String.valueOf(card.getMonsterType()));
-            preparedStatement.setString(4, String.valueOf(card.getElementType()));
-            preparedStatement.setFloat(5, card.getDamage());
-            preparedStatement.setNull(6, Types.NULL);
+            preparedStatement.setString(2, card.getName());
+            preparedStatement.setString(3, String.valueOf(card.getCardType()));
+            preparedStatement.setString(4, String.valueOf(card.getMonsterType()));
+            preparedStatement.setString(5, String.valueOf(card.getElementType()));
+            preparedStatement.setFloat(6, card.getDamage());
             preparedStatement.setNull(7, Types.NULL);
+            preparedStatement.setNull(8, Types.NULL);
+
 
             affectedRows = preparedStatement.executeUpdate();
             if (affectedRows > 0){
@@ -87,30 +118,33 @@ public class CardService {
         try{
             Connection connection = DatabaseService.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, card_type, monster_type, element_type, damage, is_locked FROM cards;");
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            List<Card> cards = new ArrayList<>();
-            while (resultSet.next()){
-                cards.add(Card.buildCard(
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getString(5),
-                        resultSet.getFloat(6),
-                        resultSet.getBoolean(7)
-                ));
-            }
-            resultSet.close();
-            preparedStatement.close();
-
-            return cards;
+            return getCardList(preparedStatement);
         } catch (SQLException exception){
             exception.printStackTrace();
         }
         return null;
     }
 
+    private List<Card> getCardList(PreparedStatement preparedStatement) throws SQLException {
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        List<Card> cards = new ArrayList<>();
+        while (resultSet.next()){
+            cards.add(Card.buildCard(
+                    resultSet.getString(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3),
+                    resultSet.getString(4),
+                    resultSet.getString(5),
+                    resultSet.getFloat(6),
+                    resultSet.getBoolean(7)
+            ));
+        }
+        resultSet.close();
+        preparedStatement.close();
+
+        return cards;
+    }
 
 
     public List<Card> getCardsByUser(User user){
@@ -118,24 +152,7 @@ public class CardService {
             Connection connection = DatabaseService.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, card_type, monster_type, element_type, damage, is_locked FROM cards WHERE user_id=?;");
             preparedStatement.setInt(1, user.getId());
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            List<Card> cards = new ArrayList<>();
-            while (resultSet.next()){
-                cards.add(Card.buildCard(
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getString(5),
-                        resultSet.getFloat(6),
-                        resultSet.getBoolean(7)
-                ));
-            }
-            resultSet.close();
-            preparedStatement.close();
-
-            return cards;
+            return getCardList(preparedStatement);
         } catch (SQLException exception){
             exception.printStackTrace();
         }
@@ -147,24 +164,7 @@ public class CardService {
             Connection connection = DatabaseService.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, card_type, monster_type, element_type, damage, is_locked FROM cards WHERE package_id=?;");
             preparedStatement.setInt(1, packageId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            List<Card> cards = new ArrayList<>();
-            while (resultSet.next()){
-                cards.add(Card.buildCard(
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getString(5),
-                        resultSet.getFloat(6),
-                        resultSet.getBoolean(7)
-                ));
-            }
-            resultSet.close();
-            preparedStatement.close();
-
-            return cards;
+            return getCardList(preparedStatement);
         } catch (SQLException exception){
             exception.printStackTrace();
         }
@@ -192,11 +192,11 @@ public class CardService {
     public int getMaxPackageId() {
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT max(package_id) as max_id FROM cards;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT package_id FROM cards ORDER BY package_id DESC LIMIT 1");
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
                 if(resultSet.next()) {
-                    return resultSet.getInt("maxId");
+                    return resultSet.getInt("package_id");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -308,24 +308,7 @@ public class CardService {
             Connection connection = DatabaseService.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM cards WHERE user_id = ? AND deck = true;");
             preparedStatement.setInt(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            List<Card> cards = new ArrayList<>();
-            while (resultSet.next()){
-                cards.add(Card.buildCard(
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getString(5),
-                        resultSet.getFloat(6),
-                        resultSet.getBoolean(7)
-                ));
-            }
-            resultSet.close();
-            preparedStatement.close();
-
-            return cards;
+            return getCardList(preparedStatement);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

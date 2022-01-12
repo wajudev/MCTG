@@ -13,9 +13,8 @@ public enum StatusCode {
     UNAUTHORIZED(401, "Unauthorized"),
     NOTFOUND(404, "Not Found"),
     INTERNALERROR(500, "Internal Server Error"),
-    VERSIONNOTSUPPORTED(505, "Version Not Supported")
-    ;
+    VERSIONNOTSUPPORTED(505, "Version Not Supported");
 
-    private Integer code;
-    private String status;
+    private final Integer code;
+    private final String status;
 }

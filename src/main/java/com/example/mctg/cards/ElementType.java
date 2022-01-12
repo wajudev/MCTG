@@ -24,6 +24,9 @@ public enum ElementType {
     }
 
     public static ElementType find(String name) {
+        if (name == null){
+            return randomElement();
+        }
         for (ElementType type : listOfNames) {
             if (type.getElementName().contains(name)) {
                 return type;
