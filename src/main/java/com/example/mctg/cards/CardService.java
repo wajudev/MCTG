@@ -192,11 +192,11 @@ public class CardService {
     public int getMaxPackageId() {
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT package_id FROM cards ORDER BY package_id DESC LIMIT 1");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT max(package_id) as max_id FROM cards");
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
                 if(resultSet.next()) {
-                    return resultSet.getInt("package_id");
+                    return resultSet.getInt("max_id");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -207,6 +207,30 @@ public class CardService {
         } catch (RuntimeException | SQLException e) {
             System.out.println("Get max packageId exception");
             return 0;
+        }
+        return 0;
+    }
+
+    public int getRandomPackage(){
+        try {
+            Connection connection = DatabaseService.getInstance().getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT package_id FROM cards OFFSET floor(random() * (SELECT COUNT(package_id) FROM cards));");
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            try {
+                if(resultSet.next()) {
+                    return resultSet.getInt("package_id");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
+            }
+            resultSet.close();
+            preparedStatement.close();
+
+
+        } catch (SQLException exception){
+            exception.printStackTrace();
         }
         return 0;
     }

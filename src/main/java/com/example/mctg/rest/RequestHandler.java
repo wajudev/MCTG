@@ -146,7 +146,7 @@ public class RequestHandler implements IRequestHandler {
         if(this.userController.setUser(token)) {
             switch (first) {
                 case "users"        -> manipulateUserAccount(this.userController.getUser().getUsername(), second);
-                //case "transactions" -> buyNewPackage(second, requestContext.getBody(), token);
+                case "transactions" -> buyPackage(second, requestContext.getBody(), token);
                 //case "tradings"     -> deleteOrTrade(second, this.requestContext.getBody());
                 default             -> setResponseStatus("URL not allowed", StatusCode.BADREQUEST);
             }
@@ -155,6 +155,17 @@ public class RequestHandler implements IRequestHandler {
         }
     }
 
+    private void buyPackage(String url, String requestBody, String token) {
+        if(this.requestContext.getMethod() == HttpMethod.POST && this.userController.setUser(token)){
+            if (url.equals("packages") && requestBody.isEmpty()) {
+                this.responseBody = this.userController.acquirePackage(null);
+            } else {
+                setResponseStatus("WRONG URL", StatusCode.BADREQUEST);
+            }
+        } else {
+            setResponseStatus("Invalid HTTP method, only POST allowed", StatusCode.BADREQUEST);
+        }
+    }
 
 
     public void anonymousUserAction(String first) throws JsonProcessingException, SQLException {

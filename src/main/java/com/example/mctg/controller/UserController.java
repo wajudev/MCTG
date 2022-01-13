@@ -37,7 +37,6 @@ public class UserController {
                     .deck(new Deck())
                     .isAdmin(false)
                     .build();
-
         } catch (Exception e) {
             e.printStackTrace();
             return "Signup failed (UserController)";
@@ -139,20 +138,20 @@ public class UserController {
         return null;
     }
 
-    public String buyPackage(List<Card> packageDB) {
-        if(packageDB == null) {
-            packageDB = new ArrayList<>(CardService.getInstance().getCardsForPackages(CardService.getInstance().getMaxPackageId()));
-            if(packageDB.size() == 0) {
+    public String acquirePackage(List<Card> packageInDB) {
+        if(packageInDB == null) {
+            packageInDB = new ArrayList<>(CardService.getInstance().getCardsForPackages(CardService.getInstance().getMaxPackageId()));
+            if(packageInDB.size() == 0) {
                 return "The are no packages available to buy";
             }
         }
 
-        if(this.user.buyPackage(packageDB)){
+        if(this.user.buyPackage(packageInDB)){
             CardService.getInstance().addPackageToUser(this.user.getId(), CardService.getInstance().getMaxPackageId());
             UserService.getInstance().updateUserStats(this.user);
             return "Package bought";
         } else {
-            return "You don't have money to buy another package";
+            return "You are out of money";
         }
 
     }
