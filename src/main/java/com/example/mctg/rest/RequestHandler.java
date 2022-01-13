@@ -123,6 +123,7 @@ public class RequestHandler implements IRequestHandler {
             default         -> setResponseStatus("Wrong URL", StatusCode.BADREQUEST);
         }
     }
+
     public void manipulateUserAccount(String token, String userNameURL) throws JsonProcessingException {
         if( userNameURL.equals(token) ) {
 
@@ -167,7 +168,6 @@ public class RequestHandler implements IRequestHandler {
         }
     }
 
-
     public void anonymousUserAction(String first) throws JsonProcessingException, SQLException {
 
         switch (first) {
@@ -203,7 +203,8 @@ public class RequestHandler implements IRequestHandler {
         }
     }
 
-    public void showUserCards(String token) throws JsonProcessingException { // ! none-admin users
+    public void showUserCards(String token) throws JsonProcessingException {
+        // Admins can't own cards
         if(this.userController.setUser(token) && !this.userController.getUser().isAdmin()) {
             if(this.userController.initializeStack()) {
                 this.responseBody = String.valueOf(cardController
@@ -250,7 +251,7 @@ public class RequestHandler implements IRequestHandler {
                 }
             }
         } else {
-            setResponseStatus("Only players own cards (not admins)", StatusCode.BADREQUEST);
+            setResponseStatus("Only players can own cards, admins aren't allowed", StatusCode.BADREQUEST);
         }
     }
 

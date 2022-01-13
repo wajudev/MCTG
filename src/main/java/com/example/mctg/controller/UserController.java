@@ -115,7 +115,7 @@ public class UserController {
 
     public String addCardsToDeck(List<String> ids) {
         if(ids.size() != 4) {
-            return "Amount of cards in deck, can't be higher than 4 ";
+            return "Amount of cards in deck, must be exactly 4 ";
         }
 
         CardService.getInstance().removeFromDeck(this.user.getId()); // Remove all cards from deck
