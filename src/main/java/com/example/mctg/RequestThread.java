@@ -44,8 +44,8 @@ public class RequestThread implements Runnable {
                         .responseStatus(StatusCode.OK)
                         .databaseService(DatabaseService.getInstance())
                         .userController(new UserController(DatabaseService.getInstance(), null))
-                        .cardController( new CardController(DatabaseService.getInstance()))
-                        //.tradeController( new TradeController( new DbConnection() ) )
+                        .cardController(new CardController(DatabaseService.getInstance()))
+                        //.tradeController()
                         .formatJson(true)
                         //.startBattle(false)
                         .build();
@@ -65,7 +65,7 @@ public class RequestThread implements Runnable {
                         .requestHeaders(null)
                         .build();
 
-                outputStream.write(res.getResponse().getBytes()); // e.getMessage();
+                outputStream.write(res.getResponse().getBytes());
             }
             outputStream.flush();
             outputStream.close();

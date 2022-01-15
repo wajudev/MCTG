@@ -92,7 +92,6 @@ public abstract class Card implements ICard {
     public String getCardStats() {
         return "\tid: " + this.id +
                 " - Name: " + this.name +
-                " - Monster Type: " + this.monsterType.getName() +
                 " - Element: " + this.elementType.getElementName() +
                 " - Damage: " + this.damage + "\n";
     }
