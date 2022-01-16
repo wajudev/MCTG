@@ -22,8 +22,11 @@ public class User  {
     private int battlesFought;
     private int battlesWon;
     private int battlesLost;
+    private int battlesDrawn;
     private int elo;
     private boolean isAdmin;
+    private String bio;
+    private String image;
 
     private Stack stack;
     private Deck deck;
@@ -48,11 +51,17 @@ public class User  {
                         " User: " + this.username +
                         " - Coins: " + this.coins +
                         " - Games Played: " + this.battlesFought +
+                        " - Games Won " + this.battlesWon +
+                        " - Games Lost " + this.battlesLost +
+                        " - Games Drawn " + this.battlesDrawn +
                         " - ELO: " + this.elo + "\n";
             }
             return  rank +
                     " User: " + this.username +
                     " - Games Played: " + this.battlesFought +
+                    " - Games Won " + this.battlesWon +
+                    " - Games Lost " + this.battlesLost +
+                    " - Games Drawn " + this.battlesDrawn +
                     " - ELO: " + this.elo + "\n";
         } else {
             return "";
@@ -61,9 +70,10 @@ public class User  {
 
     public String printUserDetails() {
         return  "-- User Account Summary -- \n" +
-                "\tUser: " + this.username +
-                " - ELO: " + this.elo + " - coins: " + this.coins +
-                "\nToken: "+ this.token + " \n";
+                "\tUser: " + this.username + " - ELO: " + this.elo + " - coins: " + this.coins + "\n" +
+                "\tBio: "+ this.bio +
+                "\tImage: "+ this.image +
+                "\tToken: "+ this.token + " \n";
     }
 
 }

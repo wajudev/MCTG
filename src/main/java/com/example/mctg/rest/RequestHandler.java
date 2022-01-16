@@ -1,6 +1,7 @@
 package com.example.mctg.rest;
 
 import com.example.mctg.cards.Card;
+import com.example.mctg.cards.CardService;
 import com.example.mctg.controller.CardController;
 import com.example.mctg.controller.UserController;
 import com.example.mctg.database.DatabaseService;
@@ -8,6 +9,7 @@ import com.example.mctg.rest.enums.HttpMethod;
 import com.example.mctg.rest.enums.StatusCode;
 import com.example.mctg.rest.interfaces.IRequestHandler;
 import com.example.mctg.user.Credentials;
+import com.example.mctg.user.User;
 import com.example.mctg.user.UserService;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -18,10 +20,8 @@ import lombok.Data;
 
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Builder
 @Data
@@ -113,7 +113,7 @@ public class RequestHandler implements IRequestHandler {
     public void loggedUserAction(String first) throws JsonProcessingException, SQLException {
 
         switch (first) {
-            //case "score"    -> getScoreBoard();
+            case "score"    -> ScoreBoard();
             case "stats"    -> this.responseBody = this.userController.getUser().userStats("");
             //case "battles"  -> startBattle(getClientToken());
             case "packages" -> insertNewPackage();
@@ -122,6 +122,17 @@ public class RequestHandler implements IRequestHandler {
             //case "tradings" -> handleTradings(getClientToken());
             default         -> setResponseStatus("Wrong URL", StatusCode.BADREQUEST);
         }
+    }
+
+    private void ScoreBoard() {
+        List<User> playersList = new ArrayList<>(UserService.getInstance().getUsersRankedByElo());
+
+        this.responseBody = "-- Scoreboard --\n";
+        playersList.forEach((temp)->{
+            if (!temp.isAdmin()){
+                this.responseBody = this.responseBody + temp.userStats(temp.toString());
+            }
+        });
     }
 
     public void manipulateUserAccount(String token, String userNameURL) throws JsonProcessingException {

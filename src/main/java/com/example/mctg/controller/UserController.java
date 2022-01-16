@@ -5,6 +5,7 @@ import com.example.mctg.cards.CardService;
 import com.example.mctg.cards.Deck;
 import com.example.mctg.cards.Stack;
 import com.example.mctg.database.DatabaseService;
+import com.example.mctg.serializer.UserProfile;
 import com.example.mctg.user.Credentials;
 import com.example.mctg.user.User;
 import com.example.mctg.user.UserService;
@@ -36,6 +37,8 @@ public class UserController {
                     .stack(new Stack())
                     .deck(new Deck())
                     .isAdmin(false)
+                    .bio("bio")
+                    .image(":)")
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,8 +63,11 @@ public class UserController {
         }
     }
 
-    public String editUserData(String jsonEditedUser) throws JsonProcessingException {
+    public String editUserData(String editedJsonUser) throws JsonProcessingException {
+        UserProfile resolvedUser = getResolvedUser(editedJsonUser);
 
+        String newBio = (resolvedUser.getBio() != null || !resolvedUser.getBio().isEmpty()) ? resolvedUser.getBio() : this.user.getBio();
+        String newImage = (resolvedUser.getImage() != null || !resolvedUser.getImage().isEmpty()) ? resolvedUser.getImage() : this.user.getImage();
 
         User user = User.builder()
                 .username(this.user.getUsername())
@@ -72,6 +78,8 @@ public class UserController {
                 .stack(this.user.getStack())
                 .deck(this.user.getDeck())
                 .isAdmin(this.user.isAdmin())
+                .bio(newBio)
+                .image(newImage)
                 .build();
 
         if(UserService.getInstance().updateUser(this.user.getId(), user)) {
@@ -79,6 +87,11 @@ public class UserController {
         } else {
             return "User info  update failed (UserController)";
         }
+    }
+
+    private UserProfile getResolvedUser(String editJsonUser) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(editJsonUser, UserProfile.class);
     }
 
 

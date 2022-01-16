@@ -26,7 +26,7 @@ public class UserService {
 
     public boolean addUser(User user) throws SQLException {
         Connection connection = DatabaseService.getInstance().getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, status, password, token, coins, elo, admin, total_battles, won_battles,lost_battles) VALUES (?,?,?,?,?,?,?,?,?,?);");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, status, password, token, coins, elo, admin, total_battles, won_battles,lost_battles, bio, image) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);");
         preparedStatement.setString(1, user.getUsername());
         preparedStatement.setString(2, user.getStatus());
         preparedStatement.setString(3, user.getPassword());
@@ -37,6 +37,9 @@ public class UserService {
         preparedStatement.setInt(8, 0);
         preparedStatement.setInt(9, 0);
         preparedStatement.setInt(10, 0);
+        preparedStatement.setString(11, user.getBio());
+        preparedStatement.setString(12, user.getImage());
+
 
         int affectedRows = preparedStatement.executeUpdate();
         if (affectedRows > 0){
@@ -116,6 +119,11 @@ public class UserService {
                 .stack(new Stack())
                 .deck(new Deck())
                 .battlesFought( resultSet.getInt("total_battles"))
+                .battlesWon(resultSet.getInt("won_battles"))
+                .battlesLost(resultSet.getInt("lost_battles"))
+                .battlesDrawn(resultSet.getInt("drawn_battles"))
+                .bio(resultSet.getString("bio"))
+                .image(resultSet.getString("image"))
                 .build();
 
 
@@ -154,23 +162,22 @@ public class UserService {
 
     public boolean updateUser(int id, User user) {
         int affectedRows = 0;
-        User toBeUpdatedUser = this.getUser(id);
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET username = ?, password = ?, token = ?, status = ? WHERE id = ?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET username = ?, password = ?, token = ?, bio = ?, image = ? WHERE id = ?;");
 
-            preparedStatement.setString(1, user.getUsername() != null ? user.getUsername() : toBeUpdatedUser.getUsername());
-            preparedStatement.setString(2, user.getPassword() != null ? user.getPassword() : toBeUpdatedUser.getPassword());
-            preparedStatement.setString(3, user.getToken() != null ? user.getToken() : toBeUpdatedUser.getToken());
-            preparedStatement.setString(4, user.getStatus() != null ? user.getStatus() : toBeUpdatedUser.getStatus());
-
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(3, user.getToken());
+            preparedStatement.setString(4, user.getBio());
+            preparedStatement.setString(5, user.getImage());
+            preparedStatement.setInt(6, id);
 
             affectedRows = preparedStatement.executeUpdate();
             if (affectedRows > 0){
                 connection.commit();
             }
             preparedStatement.close();
-            connection.close();
 
         } catch (SQLException e){
             e.printStackTrace();
@@ -182,11 +189,14 @@ public class UserService {
         int affectedRows = 0;
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET coins = ?, elo = ?, total_battles = ? WHERE username LIKE ?;");
-            preparedStatement.setInt(1, user.getCoins() );
-            preparedStatement.setInt(2, user.getElo() );
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET coins = ?, elo = ?, total_battles = ?, won_battles = ?, lost_battles = ?, drawn_battles = ? WHERE username LIKE ?;");
+            preparedStatement.setInt(1, user.getCoins());
+            preparedStatement.setInt(2, user.getElo());
             preparedStatement.setInt(3, user.getBattlesFought());
-            preparedStatement.setString(4, user.getUsername());
+            preparedStatement.setInt(4, user.getBattlesWon());
+            preparedStatement.setInt(5, user.getBattlesLost());
+            preparedStatement.setInt(6, user.getBattlesDrawn());
+            preparedStatement.setString(7, user.getUsername());
 
             affectedRows = preparedStatement.executeUpdate();
 
@@ -200,11 +210,11 @@ public class UserService {
         return affectedRows > 0;
     }
 
-    public List<User> getUsers() {
+    public List<User> getUsersRankedByElo() {
             List<User> users = new ArrayList<>();
             try {
                 Connection connection = DatabaseService.getInstance().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users");
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users ORDER BY elo, username;");
                 ResultSet resultSet = preparedStatement.executeQuery();
                 try {
                     if (resultSet.next()) {
@@ -217,13 +227,14 @@ public class UserService {
                 }
                 resultSet.close();
                 preparedStatement.close();
-                connection.close();
             } catch (SQLException e){
                 e.printStackTrace();
             }
 
             return users;
     }
+
+
 
     public User getLoggedUser(String token) {
         User user = null;
