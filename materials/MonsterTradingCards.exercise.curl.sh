@@ -63,6 +63,10 @@ curl -X POST http://localhost:10001/transactions/packages --header "Content-Type
 echo
 curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d ""
 echo
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d ""
+echo
+curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d ""
+echo
 echo "should fail: no money"
 curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d ""
 echo
@@ -81,11 +85,11 @@ curl -X GET http://localhost:10001/deck --header "Authorization: Basic altenhof-
 echo
 echo
 echo "11 configure deck"
-curl -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "[\"845f0dc7-37d0-426e-994e-43fc3ac83c08\", \"99f8f8dc-e25e-4a95-aa2c-782823f36e2a\", \"e85e3976-7c86-4d06-9a80-641c2019a79f\", \"3871d45b-b630-4a0d-8bc6-a5fc56b6a043\"]"
+curl -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "[\"27051a20-8580-43ff-a473-e986b52f297a\", \"237dbaef-49e3-4c23-b64b-abf5c087b276\", \"3871d45b-b630-4a0d-8bc6-a5fc56b6a043\", \"166c1fd5-4dcb-41a8-91cb-f45dcd57cef3\"]"
 echo
 curl -X GET http://localhost:10001/deck --header "Authorization: Basic kienboec-mtcgToken"
 echo
-curl -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "[\"1d3f175b-c067-4359-989d-96562bfa382c\", \"d04b736a-e874-4137-b191-638e0ff3b4e7\", \"8c20639d-6400-4534-bd0f-ae563f11f57a\", \"55ef46c4-016c-4168-bc43-6b9b1e86414f\"]"
+curl -X PUT http://localhost:10001/deck --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "[\"d04b736a-e874-4137-b191-638e0ff3b4e7\", \"1d3f175b-c067-4359-989d-96562bfa382c\", \"dcd93250-25a7-4dca-85da-cad2789f7198\", \"55ef46c4-016c-4168-bc43-6b9b1e86414f\"]"
 echo
 curl -X GET http://localhost:10001/deck --header "Authorization: Basic altenhof-mtcgToken"
 echo
@@ -114,50 +118,40 @@ echo "altenhof"
 curl -X GET http://localhost:10001/deck?format=plain --header "Authorization: Basic altenhof-mtcgToken"
 echo
 echo
-
-#echo "14 edit user data"
-#echo
-#curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic kienboec-mtcgToken"
-#echo
-#curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Basic altenhof-mtcgToken"
-#echo
-#curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"name\": \"Kienboeck\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
-#echo
-#curl -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "{\"name\": \"Altenhofer\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
-#echo
-#curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic kienboec-mtcgToken"
-#echo
-#curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Basic altenhof-mtcgToken"
-#echo
-#echo
-#echo "should fail:"
-#curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Basic kienboec-mtcgToken"
-#echo
-#curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic altenhof-mtcgToken"
-#echo
-#curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "{\"name\": \"Hoax\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
-#echo
-#curl -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"name\": \"Hoax\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
-#echo
-#curl -X GET http://localhost:10001/users/someGuy  --header "Authorization: Basic kienboec-mtcgToken"
-#echo
-#echo
-#
-#
-#echo "15 stats"
-#curl -X GET http://localhost:10001/stats --header "Authorization: Basic kienboec-mtcgToken"
-#echo
-#curl -X GET http://localhost:10001/stats --header "Authorization: Basic altenhof-mtcgToken"
-#echo
-#echo
-#
-#
-#echo "16 scoreboard"
-#curl -X GET http://localhost:10001/score --header "Authorization: Basic kienboec-mtcgToken"
-#echo
-#echo
-#
-#
+echo "14 edit user data"
+echo
+curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic kienboec-mtcgToken"
+echo
+curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Basic altenhof-mtcgToken"
+echo
+curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"bio\": \"me playin...\", \"image\": \":-)\"}"
+echo
+curl -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "{\"bio\": \"me codin...\",  \"image\": \":-D\"}"
+echo
+curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic kienboec-mtcgToken"
+echo
+curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Basic altenhof-mtcgToken"
+echo
+echo "should fail:"
+curl -X GET http://localhost:10001/users/altenhof --header "Authorization: Basic kienboec-mtcgToken"
+echo
+curl -X GET http://localhost:10001/users/kienboec --header "Authorization: Basic altenhof-mtcgToken"
+echo
+curl -X PUT http://localhost:10001/users/kienboec --header "Content-Type: application/json" --header "Authorization: Basic altenhof-mtcgToken" -d "{\"name\": \"Hoax\",  \"Bio\": \"me playin...\", \"Image\": \":-)\"}"
+echo
+curl -X PUT http://localhost:10001/users/altenhof --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d "{\"name\": \"Hoax\", \"Bio\": \"me codin...\",  \"Image\": \":-D\"}"
+echo
+curl -X GET http://localhost:10001/users/someGuy  --header "Authorization: Basic kienboec-mtcgToken"
+echo
+echo "15 stats"
+curl -X GET http://localhost:10001/stats --header "Authorization: Basic kienboec-mtcgToken"
+echo
+curl -X GET http://localhost:10001/stats --header "Authorization: Basic altenhof-mtcgToken"
+echo
+echo "16 scoreboard"
+curl -X GET http://localhost:10001/score --header "Authorization: Basic kienboec-mtcgToken"
+echo
+echo
 #echo "17 battle"
 #start /b "kienboec battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic kienboec-mtcgToken"
 #start /b "altenhof battle" curl -X POST http://localhost:10001/battles --header "Authorization: Basic altenhof-mtcgToken"
