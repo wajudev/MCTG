@@ -26,19 +26,19 @@ public class UserService {
 
     public boolean addUser(User user) throws SQLException {
         Connection connection = DatabaseService.getInstance().getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, status, password, token, coins, elo, admin, total_battles, won_battles,lost_battles, bio, image) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, password, token, coins, elo, admin, total_battles, won_battles,lost_battles, bio, image, drawn_battles) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);");
         preparedStatement.setString(1, user.getUsername());
-        preparedStatement.setString(2, user.getStatus());
-        preparedStatement.setString(3, user.getPassword());
-        preparedStatement.setString(4, user.getToken());
-        preparedStatement.setInt(5, user.getCoins());
-        preparedStatement.setInt(6, user.getElo());
-        preparedStatement.setBoolean(7, user.isAdmin());
+        preparedStatement.setString(2, user.getPassword());
+        preparedStatement.setString(3, user.getToken());
+        preparedStatement.setInt(4, user.getCoins());
+        preparedStatement.setInt(5, user.getElo());
+        preparedStatement.setBoolean(6, user.isAdmin());
+        preparedStatement.setInt(7, 0);
         preparedStatement.setInt(8, 0);
         preparedStatement.setInt(9, 0);
-        preparedStatement.setInt(10, 0);
-        preparedStatement.setString(11, user.getBio());
-        preparedStatement.setString(12, user.getImage());
+        preparedStatement.setString(10, user.getBio());
+        preparedStatement.setString(11, user.getImage());
+        preparedStatement.setInt(12, 0);
 
 
         int affectedRows = preparedStatement.executeUpdate();
@@ -111,7 +111,6 @@ public class UserService {
                 .id(resultSet.getInt("id"))
                 .username(resultSet.getString("username"))
                 .password(password)
-                .status(resultSet.getString("status"))
                 .token(resultSet.getString("token"))
                 .coins(resultSet.getInt("coins"))
                 .elo(resultSet.getInt("elo"))

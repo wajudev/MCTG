@@ -28,18 +28,31 @@ public class UserController {
 
     public String register(Credentials credentials) throws SQLException {
         try {
-            this.user = User.builder()
-                    .username(credentials.getUsername())
-                    .password(credentials.getPassword())
-                    .token(credentials.getUsername() + "-mtcgToken")
-                    .coins(20)
-                    .elo(100)
-                    .stack(new Stack())
-                    .deck(new Deck())
-                    .isAdmin(false)
-                    .bio("bio")
-                    .image(":)")
-                    .build();
+            // TODO maybe there is a simpler way?
+            if (credentials.getUsername().equals("admin")){
+                this.user = User.builder()
+                        .username(credentials.getUsername())
+                        .password(credentials.getPassword())
+                        .token(credentials.getUsername() + "-mtcgToken")
+                        .isAdmin(true)
+                        .bio("I am Admin")
+                        .image("^^")
+                        .build();
+            } else {
+                this.user = User.builder()
+                        .username(credentials.getUsername())
+                        .password(credentials.getPassword())
+                        .token(credentials.getUsername() + "-mtcgToken")
+                        .coins(20)
+                        .elo(100)
+                        .stack(new Stack())
+                        .deck(new Deck())
+                        .isAdmin(false)
+                        .bio("")
+                        .image("")
+                        .build();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return "Signup failed (UserController)";

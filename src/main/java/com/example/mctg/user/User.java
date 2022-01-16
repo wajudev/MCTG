@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 public class User  {
     private int id;
-    private String status;
     private String username;
     private String password;
     private String token;
