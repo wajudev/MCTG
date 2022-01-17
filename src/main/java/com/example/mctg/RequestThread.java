@@ -1,5 +1,6 @@
 package com.example.mctg;
 
+import com.example.mctg.controller.BattleController;
 import com.example.mctg.controller.CardController;
 import com.example.mctg.controller.UserController;
 import com.example.mctg.database.DatabaseService;
@@ -7,6 +8,7 @@ import com.example.mctg.rest.HttpRequest;
 import com.example.mctg.rest.HttpResponse;
 import com.example.mctg.rest.RequestHandler;
 import com.example.mctg.rest.enums.StatusCode;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.io.BufferedReader;
@@ -17,13 +19,13 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+@AllArgsConstructor
 public class RequestThread implements Runnable {
 
     private final Socket socket;
+    private final BattleController battleController;
 
-    public RequestThread(Socket socket) {
-        this.socket = socket;
-    }
+
 
     @Override
     @SneakyThrows
@@ -47,13 +49,13 @@ public class RequestThread implements Runnable {
                         .cardController(new CardController(DatabaseService.getInstance()))
                         //.tradeController()
                         .formatJson(true)
-                        //.startBattle(false)
+                        .startBattle(false)
                         .build();
 
                 HttpResponse response = requestHandler.handleRequest();
-                /*if(response.isStartBattle() && response.getPlayer() != null) { //! Battle
-                    prepareBattle(gameController, response);
-                }*/
+                if(response.isStartBattle() && response.getUser() != null) { //! Battle
+                    prepareBattle(battleController, response);
+                }
 
                 outputStream.write(response.getResponse().getBytes());
             }catch (RuntimeException e) {
@@ -99,5 +101,20 @@ public class RequestThread implements Runnable {
         } else {
             requestContext.setBody("");
         }
+    }
+
+    public void prepareBattle(BattleController battleController, HttpResponse response) throws InterruptedException {
+        if(battleController.getPlayers().size() < 2) {
+            battleController.addPlayerToArena(response.getUser());
+        }
+
+        if(battleController.getPlayers().size() == 2)
+            battleController.startBattle();
+
+        while(!battleController.getIsFinished().get()) {
+            Thread.sleep(50);
+        }
+
+        response.setReasonPhrase(battleController.getBattleLog().getBattleSummary());
     }
 }

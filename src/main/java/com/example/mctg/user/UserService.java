@@ -51,7 +51,6 @@ public class UserService {
         return affectedRows > 0;
     }
 
-
     public User getUser(String username) {
         User user = null;
         try {
@@ -232,8 +231,6 @@ public class UserService {
 
             return users;
     }
-
-
 
     public User getLoggedUser(String token) {
         User user = null;

@@ -171,12 +171,12 @@ public class CardService {
         return null;
     }
 
-    public void addCardToUser(Card card, User user){
+    public void addCardToNewUser(String id, int userId){
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE cards SET package_id = NULL, user_id = ? WHERE \"id\" = ?;");
-            preparedStatement.setInt(1, user.getId());
-            preparedStatement.setString(2, card.getId());
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE cards SET user_id = ? WHERE \"id\" LIKE ?;");
+            preparedStatement.setString(1, id);
+            preparedStatement.setInt(2, userId);
 
             int affectedRows = preparedStatement.executeUpdate();
 

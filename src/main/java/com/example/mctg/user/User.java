@@ -30,6 +30,9 @@ public class User  {
     private Stack stack;
     private Deck deck;
 
+    private final static int ELOINCREASEBY = 3;
+    private final static int ELODECREASEBY = 5;
+
 
     public boolean buyPackage(List<Card> list){ // ! DB cards
        Packages pack = new Packages(list);
@@ -74,5 +77,26 @@ public class User  {
                 "\tImage: "+ this.image +
                 "\tToken: "+ this.token + " \n";
     }
+
+    public String getUserStats() {
+        return  "-- User Account Summary -- \n" +
+                "User: " + this.username +
+                " - ELO: " + this.elo +
+                " - Games Played: " + this.battlesFought +
+                " - Games Lost " + this.battlesLost +
+                " - Games Drawn " + this.battlesDrawn +
+                " - Total Cards: " + this.stack.getStackList().size() + " \n";
+    }
+
+    public void eloDecrease() {
+        int newElo;
+        newElo = this.elo - ELODECREASEBY;
+        this.elo = Math.max(newElo, 0);
+    }
+
+    public void eloIncrease(){
+        this.elo += ELOINCREASEBY;
+    }
+
 
 }

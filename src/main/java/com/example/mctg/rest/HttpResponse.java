@@ -5,6 +5,7 @@ import com.example.mctg.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor
 public class HttpResponse {
 
@@ -23,6 +25,7 @@ public class HttpResponse {
     private Map<String, String> responseHeaders;
     private String body;
     private User user;
+    private boolean startBattle;
 
     public String getResponse(){
         this.responseHeaders = new HashMap<>();

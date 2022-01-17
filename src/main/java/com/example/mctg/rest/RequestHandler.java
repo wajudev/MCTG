@@ -21,7 +21,6 @@ import lombok.Data;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Builder
 @Data
@@ -31,6 +30,7 @@ public class RequestHandler implements IRequestHandler {
     private String responseBody;
     private String[] path;
     private boolean formatJson;
+    private boolean startBattle;
 
     private UserController userController;
     private DatabaseService databaseService;
@@ -115,12 +115,28 @@ public class RequestHandler implements IRequestHandler {
         switch (first) {
             case "score"    -> ScoreBoard();
             case "stats"    -> this.responseBody = this.userController.getUser().userStats("");
-            //case "battles"  -> startBattle(getClientToken());
+            case "battles"  -> startBattle(getClientToken());
             case "packages" -> insertNewPackage();
             case "cards"    -> showUserCards(getClientToken());
             case "deck"     -> manipulateDeck(getClientToken(), requestContext.getBody());
             //case "tradings" -> handleTradings(getClientToken());
             default         -> setResponseStatus("Wrong URL", StatusCode.BADREQUEST);
+        }
+    }
+
+    private void startBattle(String clientToken) {
+        if (this.userController.setUser(clientToken) && !this.userController.getUser().isAdmin() && this.requestContext.getMethod() == HttpMethod.POST){
+            if (this.userController.initializeStack()){
+                if (this.userController.getUser().getStack().getStackList().size() >= 4){
+                    this.startBattle = true;
+                } else {
+                    setResponseStatus("You don't have enough cards to play (min: 4)", StatusCode.BADREQUEST);
+                }
+            } else {
+                setResponseStatus("You can't start a battle. Your Stack is Empty", StatusCode.BADREQUEST);
+            }
+        } else {
+            setResponseStatus("Only players own cards (not admins)", StatusCode.BADREQUEST);
         }
     }
 
