@@ -13,6 +13,7 @@ public class Packages {
     private final int price = 5;
     private List<Card> cards;
 
+    // For Unit tests
     public Packages(){
         Random random = new Random();
         Card temp;

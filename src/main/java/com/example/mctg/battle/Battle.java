@@ -39,7 +39,7 @@ public class Battle {
         }
     }
 
-    private User fightRound(User attacker, User defender){
+    public User fightRound(User attacker, User defender){
         Card cardA = attacker.getDeck().randomCard();
         Card cardB = defender.getDeck().randomCard();
         winner = checkWinner(attacker, defender);
@@ -56,12 +56,12 @@ public class Battle {
         return winner;
     }
 
-   private void swapper(User attacker, User defender) {
+   public void swapper(User attacker, User defender) {
         this.playerOne = defender;
         this.playerTwo = attacker;
     }
 
-    private User checkWinner(User playerOne, User playerTwo){
+    public User checkWinner(User playerOne, User playerTwo){
       if (playerOne.getDeck().getDeckList().size() == 0){
           this.winner = playerTwo;
           this.loser = playerOne;
