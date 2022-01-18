@@ -1,13 +1,10 @@
 package com.example.mctg.battle;
 
 import com.example.mctg.cards.Card;
-import com.example.mctg.database.DatabaseService;
 import com.example.mctg.user.User;
-import com.example.mctg.user.UserService;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Getter

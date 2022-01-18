@@ -26,18 +26,18 @@ echo
 echo
 echo "4 add new packages , admin only"
 curl -X POST http://localhost:10001/packages --header "Content-Type: application/json" --header "Authorization: Basic admin-mtcgToken" -d "[{\"id\":\"845f0dc7-37d0-426e-994e-43fc3ac83c08\", \"name\":\"WaterGoblin\", \"monsterType\":\"Goblin\", \"elementType\":\"Water\", \"damage\": 10.0}, {\"id\":\"99f8f8dc-e25e-4a95-aa2c-782823f36e2a\", \"name\":\"Dragon\", \"monsterType\":\"Dragon\", \"damage\": 50.0}, {\"id\":\"e85e3976-7c86-4d06-9a80-641c2019a79f\", \"name\":\"WaterSpell\", \"damage\": 20.0}, {\"id\":\"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"name\":\"Ork\", \"monsterType\":\"Ork\", \"damage\": 45.0}, {\"id\":\"dfdd758f-649c-40f9-ba3a-8657f4b3439f\", \"name\":\"FireSpell\", \"elementType\":\"Fire\", \"damage\": 25.0}]"
-echo
+#echo
 curl -X POST http://localhost:10001/packages --header "Content-Type: application/json" --header "Authorization: Basic admin-mtcgToken" -d "[{\"id\":\"644808c2-f87a-4600-b313-122b02322fd5\", \"name\":\"WaterGoblin\", \"monsterType\":\"Goblin\", \"elementType\":\"Water\", \"damage\":  9.0}, {\"id\":\"4a2757d6-b1c3-47ac-b9a3-91deab093531\", \"name\":\"Dragon\", \"monsterType\":\"Dragon\", \"damage\": 55.0}, {\"id\":\"91a6471b-1426-43f6-ad65-6fc473e16f9f\", \"name\":\"WaterSpell\", \"damage\": 21.0}, {\"id\":\"4ec8b269-0dfa-4f97-809a-2c63fe2a0025\", \"name\":\"Ork\", \"monsterType\":\"Ork\", \"damage\": 55.0}, {\"id\":\"f8043c23-1534-4487-b66b-238e0c3c39b5\", \"name\":\"WaterSpell\", \"elementType\":\"Water\", \"damage\": 23.0}]"
-echo
+#echo
 curl -X POST http://localhost:10001/packages --header "Content-Type: application/json" --header "Authorization: Basic admin-mtcgToken" -d "[{\"id\":\"b017ee50-1c14-44e2-bfd6-2c0c5653a37c\", \"name\":\"WaterGoblin\", \"monsterType\":\"Goblin\", \"elementType\":\"Water\", \"damage\": 11.0}, {\"id\":\"d04b736a-e874-4137-b191-638e0ff3b4e7\", \"name\":\"Dragon\", \"monsterType\":\"Dragon\", \"damage\": 70.0}, {\"id\":\"88221cfe-1f84-41b9-8152-8e36c6a354de\", \"name\":\"WaterSpell\", \"damage\": 22.0}, {\"id\":\"1d3f175b-c067-4359-989d-96562bfa382c\", \"name\":\"Ork\", \"monsterType\":\"Ork\", \"damage\": 40.0}, {\"id\":\"171f6076-4eb5-4a7d-b3f2-2d650cc3d237\", \"name\":\"RegularSpell\", \"elementType\":\"Normal\", \"damage\": 28.0}]"
-echo
+#echo
 curl -X POST http://localhost:10001/packages --header "Content-Type: application/json" --header "Authorization: Basic admin-mtcgToken" -d "[{\"id\":\"ed1dc1bc-f0aa-4a0c-8d43-1402189b33c8\", \"name\":\"WaterGoblin\", \"monsterType\":\"Goblin\", \"elementType\":\"Water\", \"damage\": 10.0}, {\"id\":\"65ff5f23-1e70-4b79-b3bd-f6eb679dd3b5\", \"name\":\"Dragon\", \"monsterType\":\"Dragon\", \"damage\": 50.0}, {\"id\":\"55ef46c4-016c-4168-bc43-6b9b1e86414f\", \"name\":\"WaterSpell\", \"damage\": 20.0}, {\"id\":\"f3fad0f2-a1af-45df-b80d-2e48825773d9\", \"name\":\"Ork\", \"monsterType\":\"Ork\", \"damage\": 45.0}, {\"id\":\"8c20639d-6400-4534-bd0f-ae563f11f57a\", \"name\":\"WaterSpell\", \"elementType\":\"Water\", \"damage\": 25.0}]"
-echo
+#echo
 curl -X POST http://localhost:10001/packages --header "Content-Type: application/json" --header "Authorization: Basic admin-mtcgToken" -d "[{\"id\":\"d7d0cb94-2cbf-4f97-8ccf-9933dc5354b8\", \"name\":\"WaterGoblin\", \"monsterType\":\"Goblin\", \"elementType\":\"Water\", \"damage\":  9.0}, {\"id\":\"44c82fbc-ef6d-44ab-8c7a-9fb19a0e7c6e\", \"name\":\"Dragon\", \"monsterType\":\"Dragon\", \"damage\": 55.0}, {\"id\":\"2c98cd06-518b-464c-b911-8d787216cddd\", \"name\":\"WaterSpell\", \"damage\": 21.0}, {\"id\":\"951e886a-0fbf-425d-8df5-af2ee4830d85\", \"name\":\"Ork\", \"monsterType\":\"Ork\", \"damage\": 55.0}, {\"id\":\"dcd93250-25a7-4dca-85da-cad2789f7198\", \"name\":\"FireSpell\", \"elementType\":\"Fire\", \"damage\": 23.0}]"
-echo
+#echo
 curl -X POST http://localhost:10001/packages --header "Content-Type: application/json" --header "Authorization: Basic admin-mtcgToken" -d "[{\"id\":\"b2237eca-0271-43bd-87f6-b22f70d42ca4\", \"name\":\"WaterGoblin\", \"monsterType\":\"Goblin\", \"elementType\":\"Water\", \"damage\": 11.0}, {\"id\":\"9e8238a4-8a7a-487f-9f7d-a8c97899eb48\", \"name\":\"Dragon\", \"monsterType\":\"Dragon\", \"damage\": 70.0}, {\"id\":\"d60e23cf-2238-4d49-844f-c7589ee5342e\", \"name\":\"WaterSpell\", \"damage\": 22.0}, {\"id\":\"fc305a7a-36f7-4d30-ad27-462ca0445649\", \"name\":\"Ork\", \"monsterType\":\"Ork\", \"damage\": 40.0}, {\"id\":\"84d276ee-21ec-4171-a509-c1b88162831c\", \"name\":\"RegularSpell\", \"elementType\":\"Normal\", \"damage\": 28.0}]"
-echo
-echo
+#echo
+#echo
 echo "5 buy packages kienboec"
 curl -X POST http://localhost:10001/transactions/packages --header "Content-Type: application/json" --header "Authorization: Basic kienboec-mtcgToken" -d ""
 echo
@@ -81,7 +81,7 @@ echo
 echo "10 show unconfigured deck"
 curl -X GET http://localhost:10001/deck --header "Authorization: Basic kienboec-mtcgToken"
 echo
-curl -X GET http://localhost:10001/deck --header "Authorization: Basic altenhof-mtcgToken"
+curl -X GET http://localhost:10001/deck --header "Authorization: Basic kienboec-mtcgToken"
 echo
 echo
 echo "11 configure deck"

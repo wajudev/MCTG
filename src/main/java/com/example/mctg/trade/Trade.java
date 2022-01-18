@@ -1,4 +1,4 @@
-package trade;
+package com.example.mctg.trade;
 
 import com.example.mctg.cards.Card;
 import com.example.mctg.cards.MonsterCard;

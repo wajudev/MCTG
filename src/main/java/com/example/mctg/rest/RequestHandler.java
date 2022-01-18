@@ -1,7 +1,6 @@
 package com.example.mctg.rest;
 
 import com.example.mctg.cards.Card;
-import com.example.mctg.cards.CardService;
 import com.example.mctg.controller.CardController;
 import com.example.mctg.controller.TradeController;
 import com.example.mctg.controller.UserController;
@@ -18,7 +17,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
-
 
 import java.sql.SQLException;
 import java.util.*;
@@ -105,7 +103,7 @@ public class RequestHandler implements IRequestHandler {
 
     public void selectAction(String first, String token) throws JsonProcessingException, SQLException {
 
-        if(this.userController.setUser(token)) { // ! user is not logged in
+        if(this.userController.setUser(token)) {
             loggedUserAction(first);
         } else {
             anonymousUserAction(first);
@@ -163,9 +161,12 @@ public class RequestHandler implements IRequestHandler {
     }
 
     public void showTrades() {
-        String allStr = "--------------------\n" +
-                "-- Cards to Trade --\n" +
-                "--------------------\n\n";
+        String allStr = """
+                --------------------
+                -- Cards to Trade --
+                --------------------
+
+                """;
         String tradesInfo = String.valueOf(tradeController.getTradesSummary());
         if(tradesInfo == null) {
             setResponseStatus("The are no trades available", StatusCode.NOCONTENT);
@@ -293,7 +294,7 @@ public class RequestHandler implements IRequestHandler {
 
     public static Credentials getCredentials(String requestBody) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY); // also private attributes
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY); // also, private attributes
         return objectMapper.readValue(requestBody, Credentials.class);
     }
 

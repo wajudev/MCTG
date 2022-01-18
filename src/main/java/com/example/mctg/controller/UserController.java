@@ -4,7 +4,6 @@ import com.example.mctg.cards.Card;
 import com.example.mctg.cards.CardService;
 import com.example.mctg.cards.Deck;
 import com.example.mctg.cards.Stack;
-import com.example.mctg.database.DatabaseService;
 import com.example.mctg.serializer.UserProfile;
 import com.example.mctg.user.Credentials;
 import com.example.mctg.user.User;
@@ -55,13 +54,13 @@ public class UserController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "Signup failed (UserController)";
+            return "Signup failed ";
         }
 
         if(UserService.getInstance().addUser(user)) {
-            return "Signup was successful (UserController)";
+            return "Signup was successful";
         } else {
-            return "Signup failed (UserController)";
+            return "Signup failed";
         }
     }
 
@@ -96,9 +95,9 @@ public class UserController {
                 .build();
 
         if(UserService.getInstance().updateUser(this.user.getId(), user)) {
-            return "User info update was successful (UserController)";
+            return "User info update was successful";
         } else {
-            return "User info  update failed (UserController)";
+            return "User info  update failed";
         }
     }
 
@@ -113,7 +112,7 @@ public class UserController {
             this.user = UserService.getInstance().getUserByUsername(credentials.getUsername(), credentials.getPassword());
             if (this.user != null){
                 if (UserService.getInstance().addSession(credentials.getUsername() + "-mtcgToken")){
-                    System.out.println("Login was successful (UserController)");
+                    System.out.println("Login was successful");
                     return "Login was successful";
                 } else {
                     return "User is already logged in";
@@ -123,7 +122,7 @@ public class UserController {
             }
         } catch (RuntimeException e){
             e.printStackTrace();
-            System.out.println("Login failed (UserController)");
+            System.out.println("Login failed");
             return "Something failed";
         }
     }
@@ -144,22 +143,20 @@ public class UserController {
             return "Amount of cards in deck, must be exactly 4 ";
         }
 
-        CardService.getInstance().removeFromDeck(this.user.getId()); // Remove all cards from deck
+        // Remove all cards from deck
+        CardService.getInstance().removeFromDeck(this.user.getId());
 
-        for(String id: ids) {  // ! mark card isDeck if user-id marches
+        // mark card isDeck if userId matches
+        for(String id: ids) {
             if (!CardService.getInstance().addToDeck(id, this.user.getId())){
                 CardService.getInstance().removeFromDeck(this.user.getId());
                 return "This card has not been added, because it doesn't belong to this user";
             }
         }
 
-        // ! initialize/set new user's deck
+        //  initialize new user's deck
         this.user.getDeck().setDeckList(CardService.getInstance().getCardsInDeck(this.user.getId()));
 
-        /*for(String id: ids) { // ! delete from trading market
-            if(db.getTradeByCardId(id) != null)
-                db.deleteTrade(id);
-        }*/
 
         return null;
     }

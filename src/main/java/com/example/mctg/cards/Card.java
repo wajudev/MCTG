@@ -132,7 +132,7 @@ public abstract class Card implements ICard {
                     .build();
 
         } else {
-            // Otherwise create Spell Card
+            // Otherwise, create Spell Card
             card = SpellCard.builder()
                     .id(id)
                     .name(name)

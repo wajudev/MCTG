@@ -13,7 +13,7 @@ import com.example.mctg.rest.enums.StatusCode;
 import com.example.mctg.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import trade.TradeService;
+import com.example.mctg.trade.TradeService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,7 +39,10 @@ public class RequestThread implements Runnable {
         readHeader(header, reader);
 
         try {
-            if(header.size() < 2) return; // postman solution - empty request
+            // postman solution - empty request
+            if(header.size() < 2){
+                return;
+            }
             HttpRequest requestContext = new HttpRequest(header);
             OutputStream outputStream = socket.getOutputStream();
             readBody(requestContext, reader);

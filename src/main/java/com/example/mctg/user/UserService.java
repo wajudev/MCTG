@@ -60,7 +60,7 @@ public class UserService {
             ResultSet resultSet = preparedStatement.executeQuery();
             try {
                 if (resultSet.next()) {
-                    user =buildUser(resultSet, false);
+                    user =buildUser(resultSet, true);
                 }
             } catch (Exception e){
                 e.printStackTrace();
@@ -217,7 +217,7 @@ public class UserService {
                 try {
                     if (resultSet.next()) {
                         do {
-                            users.add(buildUser(resultSet, false));
+                            users.add(buildUser(resultSet, true));
                         } while (resultSet.next());
                     }
                 } catch (Exception e){

@@ -2,15 +2,14 @@ package com.example.mctg.controller;
 
 import com.example.mctg.cards.Card;
 import com.example.mctg.cards.CardService;
-import com.example.mctg.database.DatabaseService;
 import com.example.mctg.serializer.TradeData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import trade.Trade;
-import trade.TradeService;
+import com.example.mctg.trade.Trade;
+import com.example.mctg.trade.TradeService;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -40,8 +39,8 @@ public class TradeController {
         return stringBuilder;
     }
 
-    public String getRequirementsForTrading(String tradeId){
-        Trade trade = TradeService.getInstance().getTradeByTradeId(tradeId);
+    public String getRequirementsForTrading(String cardId){
+        Trade trade = TradeService.getInstance().getTradeByCardId(cardId);
         return trade.tradeSummary();
     }
 
