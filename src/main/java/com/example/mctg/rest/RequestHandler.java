@@ -3,6 +3,7 @@ package com.example.mctg.rest;
 import com.example.mctg.cards.Card;
 import com.example.mctg.cards.CardService;
 import com.example.mctg.controller.CardController;
+import com.example.mctg.controller.TradeController;
 import com.example.mctg.controller.UserController;
 import com.example.mctg.database.DatabaseService;
 import com.example.mctg.rest.enums.HttpMethod;
@@ -35,6 +36,7 @@ public class RequestHandler implements IRequestHandler {
     private UserController userController;
     private DatabaseService databaseService;
     private CardController cardController;
+    private TradeController tradeController;
 
     public HttpResponse handleRequest() throws JsonProcessingException, SQLException {
         if (!HttpMethod.methodList.contains(requestContext.getMethod())){
@@ -119,8 +121,96 @@ public class RequestHandler implements IRequestHandler {
             case "packages" -> insertNewPackage();
             case "cards"    -> showUserCards(getClientToken());
             case "deck"     -> manipulateDeck(getClientToken(), requestContext.getBody());
-            //case "tradings" -> handleTradings(getClientToken());
+            case "tradings" -> tradeHandler(getClientToken());
             default         -> setResponseStatus("Wrong URL", StatusCode.BADREQUEST);
+        }
+    }
+
+    public void selectAction(String first, String second, String token) throws JsonProcessingException {
+        //! localhost:8008/first/second
+
+        if(this.userController.setUser(token)) {
+            switch (first) {
+                case "users"        -> manipulateUserAccount(this.userController.getUser().getUsername(), second);
+                case "transactions" -> buyPackage(second, requestContext.getBody(), token);
+                case "tradings"     -> tradeOrDelete(second, this.requestContext.getBody());
+                default             -> setResponseStatus("URL not allowed", StatusCode.BADREQUEST);
+            }
+        } else {
+            setResponseStatus("Need to login to access any functionality", StatusCode.BADREQUEST);
+        }
+    }
+
+    public void tradeHandler(String token) throws JsonProcessingException, SQLException {
+        if (this.userController.setUser(token) && !this.userController.getUser().isAdmin()){
+            switch (this.requestContext.getMethod()){
+                case GET -> showTrades();
+                case POST -> addTrade(this.requestContext.getBody(), this.userController.getUser().getId());
+                default -> setResponseStatus("Wrong method", StatusCode.BADREQUEST);
+            }
+        } else {
+            setResponseStatus("Only players own cards", StatusCode.BADREQUEST);
+        }
+    }
+
+    public void addTrade(String requestBody, int userId) throws JsonProcessingException, SQLException {
+        String errorMsg = tradeController.addNewTrade(requestBody, userId);
+        if(errorMsg == null) {
+            this.responseBody = "New trade added";
+        } else {
+            setResponseStatus(errorMsg, StatusCode.BADREQUEST);
+        }
+    }
+
+    public void showTrades() {
+        String allStr = "--------------------\n" +
+                "-- Cards to Trade --\n" +
+                "--------------------\n\n";
+        String tradesInfo = String.valueOf(tradeController.getTradesSummary());
+        if(tradesInfo == null) {
+            setResponseStatus("The are no trades available", StatusCode.NOCONTENT);
+        } else {
+            System.out.println(allStr + tradesInfo);
+            this.responseBody = allStr + tradesInfo;
+        }
+    }
+
+    public void tradeOrDelete(String desiredCardId, String requestBody){
+        if (HttpMethod.DELETE == requestContext.getMethod()){
+            deleteTrade(desiredCardId);
+        } else if (HttpMethod.POST == requestContext.getMethod()){
+            tradeCards(desiredCardId, requestBody);
+        }
+    }
+
+    public void tradeCards(String desiredCard, String requestBody){
+        if (requestBody.isEmpty()){
+            String errorMsg = tradeController.payForTrade(desiredCard, userController.getUser().getId(), userController.getUser().getCoins());
+
+            if (errorMsg == null){
+                this.userController.getUser().setCoins(this.userController.getUser().getCoins());
+                this.userController.getUserService().updateUserStats(this.getUserController().getUser());
+                this.responseBody = "Trade purchase was successful";
+            } else {
+                setResponseStatus(errorMsg, StatusCode.BADREQUEST);
+            }
+        } else {
+            String offeredCardId = requestBody.replaceAll("[\"]", "");
+            String errorMsg = tradeController.tradeCards(desiredCard, offeredCardId, userController.getUser().getId());
+            if (errorMsg == null){
+                this.responseBody = "Trade was successful";
+            } else {
+                setResponseStatus(errorMsg, StatusCode.BADREQUEST);
+            }
+        }
+    }
+
+    public void deleteTrade(String tradeId) {
+        String errorMsg = tradeController.deleteTradedCard(tradeId);
+        if(errorMsg == null) {
+            this.responseBody = "Trade was deleted";
+        } else {
+            setResponseStatus(errorMsg, StatusCode.BADREQUEST);
         }
     }
 
@@ -165,21 +255,6 @@ public class RequestHandler implements IRequestHandler {
 
         } else {
             setResponseStatus("You don't have access to other users' account", StatusCode.UNAUTHORIZED);
-        }
-    }
-
-    public void selectAction(String first, String second, String token) throws JsonProcessingException {
-        //! localhost:8008/first/second
-
-        if(this.userController.setUser(token)) {
-            switch (first) {
-                case "users"        -> manipulateUserAccount(this.userController.getUser().getUsername(), second);
-                case "transactions" -> buyPackage(second, requestContext.getBody(), token);
-                //case "tradings"     -> deleteOrTrade(second, this.requestContext.getBody());
-                default             -> setResponseStatus("URL not allowed", StatusCode.BADREQUEST);
-            }
-        } else {
-            setResponseStatus("Need to login to access any functionality", StatusCode.BADREQUEST);
         }
     }
 

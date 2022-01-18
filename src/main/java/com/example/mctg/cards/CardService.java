@@ -36,7 +36,8 @@ public class CardService {
                         resultSet.getString(4),
                         resultSet.getString(5),
                         resultSet.getFloat(6),
-                        resultSet.getBoolean(7));
+                        resultSet.getBoolean(7),
+                        resultSet.getInt(8));
 
                 resultSet.close();
                 preparedStatement.close();
@@ -137,7 +138,8 @@ public class CardService {
                     resultSet.getString(4),
                     resultSet.getString(5),
                     resultSet.getFloat(6),
-                    resultSet.getBoolean(7)
+                    resultSet.getBoolean(7),
+                    resultSet.getInt(8)
             ));
         }
         resultSet.close();
@@ -150,7 +152,7 @@ public class CardService {
     public List<Card> getCardsByUser(User user){
         try{
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, card_type, monster_type, element_type, damage, is_locked FROM cards WHERE user_id=?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, card_type, monster_type, element_type, damage, is_locked, user_id FROM cards WHERE user_id=?;");
             preparedStatement.setInt(1, user.getId());
             return getCardList(preparedStatement);
         } catch (SQLException exception){
@@ -162,7 +164,7 @@ public class CardService {
     public List<Card> getCardsForPackages(int packageId){
         try{
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, card_type, monster_type, element_type, damage, is_locked FROM cards WHERE package_id=?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name, card_type, monster_type, element_type, damage, is_locked, user_id FROM cards WHERE package_id=?;");
             preparedStatement.setInt(1, packageId);
             return getCardList(preparedStatement);
         } catch (SQLException exception){
@@ -175,8 +177,8 @@ public class CardService {
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE cards SET user_id = ? WHERE \"id\" LIKE ?;");
-            preparedStatement.setString(1, id);
-            preparedStatement.setInt(2, userId);
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setString(2, id);
 
             int affectedRows = preparedStatement.executeUpdate();
 

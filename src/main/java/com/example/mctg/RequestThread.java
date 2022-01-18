@@ -1,15 +1,19 @@
 package com.example.mctg;
 
+import com.example.mctg.cards.CardService;
 import com.example.mctg.controller.BattleController;
 import com.example.mctg.controller.CardController;
+import com.example.mctg.controller.TradeController;
 import com.example.mctg.controller.UserController;
 import com.example.mctg.database.DatabaseService;
 import com.example.mctg.rest.HttpRequest;
 import com.example.mctg.rest.HttpResponse;
 import com.example.mctg.rest.RequestHandler;
 import com.example.mctg.rest.enums.StatusCode;
+import com.example.mctg.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import trade.TradeService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,9 +49,9 @@ public class RequestThread implements Runnable {
                         .requestContext(requestContext)
                         .responseStatus(StatusCode.OK)
                         .databaseService(DatabaseService.getInstance())
-                        .userController(new UserController(DatabaseService.getInstance(), null))
-                        .cardController(new CardController(DatabaseService.getInstance()))
-                        //.tradeController()
+                        .userController(new UserController(UserService.getInstance(), null))
+                        .cardController(new CardController(CardService.getInstance()))
+                        .tradeController(new TradeController(TradeService.getInstance()))
                         .formatJson(true)
                         .startBattle(false)
                         .build();

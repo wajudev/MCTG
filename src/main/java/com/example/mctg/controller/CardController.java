@@ -19,7 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 public class CardController {
-    private DatabaseService databaseService;
+    private CardService cardService;
 
     // Json to Card
     public CardData[] deserializer(String cardsArray) throws JsonProcessingException {

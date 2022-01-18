@@ -96,7 +96,7 @@ public abstract class Card implements ICard {
                 " - Damage: " + this.damage + "\n";
     }
 
-    public static Card buildCard(String id, String name, String cardTypeString, String monsterTypeString, String elementTypeString, float damage, boolean locked){
+    public static Card buildCard(String id, String name, String cardTypeString, String monsterTypeString, String elementTypeString, float damage, boolean locked, int userId){
         CardType cardType;
         MonsterType monsterType;
         ElementType elementType;
@@ -128,6 +128,7 @@ public abstract class Card implements ICard {
                     .monsterType(monsterType)
                     .elementType(elementType)
                     .damage(damage)
+                    .userId(userId)
                     .build();
 
         } else {
@@ -137,6 +138,7 @@ public abstract class Card implements ICard {
                     .name(name)
                     .elementType(elementType)
                     .damage(damage)
+                    .userId(userId)
                     .build();
         }
 

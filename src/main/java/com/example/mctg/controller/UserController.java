@@ -23,7 +23,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class UserController {
-    private DatabaseService databaseService;
+    private UserService userService;
     private User user;
 
     public String register(Credentials credentials) throws SQLException {
