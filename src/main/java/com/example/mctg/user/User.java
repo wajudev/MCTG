@@ -99,4 +99,16 @@ public class User  {
     }
 
 
+    // For unit test
+    public void buyPackage() {
+        Packages newPackage = new Packages();
+        if(this.coins - newPackage.getPrice() > 0) {
+            this.coins = this.coins - newPackage.getPrice();
+            this.stack.addListToStack(newPackage.getCards());
+        }
+    }
+
+    public void prepareDeck() {
+        this.deck = new Deck(this);
+    }
 }
