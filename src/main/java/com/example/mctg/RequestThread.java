@@ -28,9 +28,6 @@ public class RequestThread implements Runnable {
 
     private final Socket socket;
     private final BattleController battleController;
-
-
-
     @Override
     @SneakyThrows
     public void run() {

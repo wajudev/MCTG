@@ -52,6 +52,7 @@ public class RequestHandler implements IRequestHandler {
                 .status(this.responseStatus)
                 .requestHeaders(this.requestContext.getHeaders())
                 .user(this.userController.getUser())
+                .startBattle(startBattle)
                 .build();
     }
 
@@ -219,7 +220,8 @@ public class RequestHandler implements IRequestHandler {
         if (this.userController.setUser(clientToken) && !this.userController.getUser().isAdmin() && this.requestContext.getMethod() == HttpMethod.POST){
             if (this.userController.initializeStack()){
                 if (this.userController.getUser().getStack().getStackList().size() >= 4){
-                    this.startBattle = true;
+                    startBattle = true;
+                    setResponseStatus( "Player: " + userController.getUser().getUsername() + " is ready" + "\n", StatusCode.OK);
                 } else {
                     setResponseStatus("You don't have enough cards to play (min: 4)", StatusCode.BADREQUEST);
                 }

@@ -26,7 +26,7 @@ public class UserService {
 
     public boolean addUser(User user) throws SQLException {
         Connection connection = DatabaseService.getInstance().getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, password, token, coins, elo, admin, total_battles, won_battles,lost_battles, bio, image, drawn_battles) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(username, password, token, coins, elo, admin, total_battles, won_battles,lost_battles, bio, image, drawn_battles, wl_ratio) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);");
         preparedStatement.setString(1, user.getUsername());
         preparedStatement.setString(2, user.getPassword());
         preparedStatement.setString(3, user.getToken());
@@ -39,6 +39,7 @@ public class UserService {
         preparedStatement.setString(10, user.getBio());
         preparedStatement.setString(11, user.getImage());
         preparedStatement.setInt(12, 0);
+        preparedStatement.setFloat(13, 0);
 
 
         int affectedRows = preparedStatement.executeUpdate();
@@ -120,6 +121,7 @@ public class UserService {
                 .battlesWon(resultSet.getInt("won_battles"))
                 .battlesLost(resultSet.getInt("lost_battles"))
                 .battlesDrawn(resultSet.getInt("drawn_battles"))
+                .winLossRatio(resultSet.getFloat("wl_ratio"))
                 .bio(resultSet.getString("bio"))
                 .image(resultSet.getString("image"))
                 .build();
@@ -187,14 +189,15 @@ public class UserService {
         int affectedRows = 0;
         try {
             Connection connection = DatabaseService.getInstance().getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET coins = ?, elo = ?, total_battles = ?, won_battles = ?, lost_battles = ?, drawn_battles = ? WHERE username LIKE ?;");
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET coins = ?, elo = ?, total_battles = ?, won_battles = ?, lost_battles = ?, drawn_battles = ?, wl_ratio = ? WHERE username LIKE ?;");
             preparedStatement.setInt(1, user.getCoins());
             preparedStatement.setInt(2, user.getElo());
             preparedStatement.setInt(3, user.getBattlesFought());
             preparedStatement.setInt(4, user.getBattlesWon());
             preparedStatement.setInt(5, user.getBattlesLost());
             preparedStatement.setInt(6, user.getBattlesDrawn());
-            preparedStatement.setString(7, user.getUsername());
+            preparedStatement.setFloat(7, user.getWinLossRatio());
+            preparedStatement.setString(8, user.getUsername());
 
             affectedRows = preparedStatement.executeUpdate();
 

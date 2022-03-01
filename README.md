@@ -65,7 +65,9 @@
   Battle logic and all information concerning battles
 
 - `Serializers`
-  Helps with the conversion of Java Classes to JSON Formats and vice versa
+  Objectmappers
+  Helps with the conversion of Java Classes to JSON Formats and vice versa.
+  
 
 `Database`
 - The database consists of 4 tables.
@@ -86,23 +88,22 @@
   fully automated (Read Failures and Selected Solutions). Postman was also used to run test number 
   "13 show configured deck different representation", 
   since I couldn't figure out the correct syntax to run it in the shell file. 
-  All tests were successful except test 17 (Read Failures and Selected Solutions) 
+  
 
 # `Failures and Selected Solutions`
 
-  The two biggest sources of error were the lack of knowledge about the structure of a rest server 
+  The two biggest sources of error were the lack of knowledge about the structure of a rest api server 
   and little to no Java experiences prior to this course. 
   Understanding the structure of the server took some time and raised most of the questions. Many attempts finally led to a working result.
  
   Another problem was , I wasn't sure what to do with the curl script and started programming a console application
   things got really messy, and I ended up running the script using scratch files, then postman before converting the .bat file to .sh.
   Anytime I let the curl script (.sh file) run, the server shuts down after executing a few commands.
-  everything seems to be working fine, if I copy and paste in the terminal and not run everything at once.
+  everything seems to be working fine, if I copy and paste in the terminal and not run the script at once.
 
-  Test 13, isn't running in the .sh, but works fine on postman and in scratch files.
+  Test 13, isn't running in the .sh file, but works fine on postman and in scratch files.
 
-  As mentioned above , test 17 wasn't successful, I'm yet to find a solution to the problem (Empty response body, causing a NULL POINTER Exception).
-  However, in the meantime, I have written unittests for the class(Battle). Hopefully, there's enough time to solve this problem.
+  My Battle logic is really flawed, that's something that could be improved.
 
 
 # `Unit Tests`
@@ -112,17 +113,24 @@
   unnecessary to test this part of the project(maybe I should, I might figure out why the HTTP server keeps crashing).
   Most importantly , my unittests were selected to make sure key parts of the project were functioning. for example, Decks
   were tested to make sure the correct amount of cards is in there at all times, or that the card inserted in the database has the
-  correct cardType.
+  correct cardType or The battle logic works as I have programmed it to.
 
-# `Unique Features`
+# `Unique / Optional Features `
    - MonsterType or ElementType are randomized if not specified
    - If no Card is offered in trade, the buyer(whoever sends the request) pays 5 coins.
-   - Amount of games won, lost or drawn documented  (Haven't been fully implemented).
-
+   - Amount of games won, lost or drawn are documented.
+   - Last logged In, exists in database.
+   - Players ranked by Elo on scoreboard.
+   - Win/Loss Ratio implemented
+   
 # `Time Tracking`
+  The time invested in this project was significantly high, this was expected due to various reasons e.g. lack of programming experience in JAVA prior to this course etc. 
+  However for the most part, there was a lot spent on being in a constant state of confusion as to how everything was to be built. Comparing my initial approach to the
+  current version, one will see how much was changed.
 
-  The time invested in this project was significantly high, this was expected due to reasons like lack of programming experience in JAVA etc. 
-  However for the most part, there was a lot spent on being in a constant state of confusion as to how everything was to be built and my initial approach 
-  is different to the one of the current version.
+  The time spent on this project is estimated to be **92hrs** 
 
-  The time spent on this project is estimated to be 80hrs 
+# `Lesson Learned`
+  - The best way to learn a programming language is by practising and writing more code, my knowledge/Skills
+     in JAVA has significantly increased due to this project.
+  - Test! Test!! Test!!!

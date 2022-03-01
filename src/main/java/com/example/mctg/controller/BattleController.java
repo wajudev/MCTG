@@ -56,7 +56,7 @@ public class BattleController {
     }
 
     public void updateResults(User user){
-        for (Card card: user.getDeck().getDeckList()){
+        for (Card card: user.getStack().getStackList()){
             CardService.getInstance().addCardToNewUser(card.getId(), user.getId());
         }
         CardService.getInstance().removeFromDeck(user.getId());

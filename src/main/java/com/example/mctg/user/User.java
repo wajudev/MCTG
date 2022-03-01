@@ -23,6 +23,7 @@ public class User  {
     private int battlesLost;
     private int battlesDrawn;
     private int elo;
+    private float winLossRatio;
     private boolean isAdmin;
     private String bio;
     private String image;
@@ -56,6 +57,7 @@ public class User  {
                         " - Games Won " + this.battlesWon +
                         " - Games Lost " + this.battlesLost +
                         " - Games Drawn " + this.battlesDrawn +
+                        " - Win/Loss Ratio " + this.winLossRatio +
                         " - ELO: " + this.elo + "\n";
             }
             return  rank +
@@ -64,6 +66,7 @@ public class User  {
                     " - Games Won " + this.battlesWon +
                     " - Games Lost " + this.battlesLost +
                     " - Games Drawn " + this.battlesDrawn +
+                    " - Win/Loss Ratio " + this.winLossRatio +
                     " - ELO: " + this.elo + "\n";
         } else {
             return "";
@@ -80,11 +83,13 @@ public class User  {
 
     public String getUserStats() {
         return  "-- User Account Summary -- \n" +
-                "User: " + this.username +
+                "-  User: " + this.username +
                 " - ELO: " + this.elo +
                 " - Games Played: " + this.battlesFought +
+                " - Games Won: " + this.battlesWon +
                 " - Games Lost " + this.battlesLost +
                 " - Games Drawn " + this.battlesDrawn +
+                " - Win/Loss Ratio " + this.winLossRatio +
                 " - Total Cards: " + this.stack.getStackList().size() + " \n";
     }
 
@@ -110,5 +115,22 @@ public class User  {
 
     public void prepareDeck() {
         this.deck = new Deck(this);
+    }
+
+    public void updateBattlesFoughtAndWon(){
+        this.battlesFought++;
+        this.battlesWon++;
+        this.winLossRatio = (float) battlesWon / battlesFought;
+
+    }
+    public void updateBattlesFoughtAndDrawn(){
+        this.battlesFought++;
+        this.battlesDrawn++;
+        this.winLossRatio = (float) battlesWon / battlesFought;
+    }
+    public void updateBattlesFoughtAndLost(){
+        this.battlesFought++;
+        this.battlesLost++;
+        this.winLossRatio = (float) battlesWon / battlesFought;
     }
 }

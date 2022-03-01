@@ -14,7 +14,8 @@ create table users
     admin         boolean            not null,
     bio           varchar(255),
     image         varchar(255),
-    drawn_battles integer
+    drawn_battles integer,
+    wl_ratio      double precision
 );
 
 alter table users
@@ -66,5 +67,4 @@ create table trades
 
 alter table trades
     owner to waju;
-
 

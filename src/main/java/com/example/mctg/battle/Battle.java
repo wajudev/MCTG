@@ -23,6 +23,8 @@ public class Battle {
         this.arena = new ArrayList<>();
     }
 
+
+
     public void startBattle(){
         while (this.winner == null && rounds < MAX_ROUNDS){
             rounds++;
@@ -33,6 +35,11 @@ public class Battle {
         if(this.winner != null){
             this.winner.eloIncrease();
             this.loser.eloDecrease();
+            this.winner.updateBattlesFoughtAndWon();
+            this.loser.updateBattlesFoughtAndLost();
+        } else {
+            playerOne.updateBattlesFoughtAndDrawn();
+            playerTwo.updateBattlesFoughtAndDrawn();
         }
     }
 
@@ -50,6 +57,7 @@ public class Battle {
         if (winner == null){
             swapper(attacker, defender);
         }
+
         return winner;
     }
 
